@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TalentLink - Job Listings</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <div class="container" style="display: flex; justify-content: space-between; align-items: center; padding: 1rem 0;">
+            <h1 style="margin: 0;"><a href="index.html" style="color: white; text-decoration: none;">TalentLink</a></h1>
+            <nav id="mainNav" style="display: flex; align-items: center; gap: 1.5rem;">
+                <a href="index.html" style="color: white; text-decoration: none;">Jobs</a>
+                
+                <!-- Login/Signup Buttons (Shown when not logged in) -->
+                <span id="authNav" style="display: flex; gap: 1rem; align-items: center;">
+                    <a href="login.html" class="btn-text" style="color: white; text-decoration: none; padding: 0.5rem 1rem;">Login</a>
+                    <a href="signup.html" class="btn-outline" style="border: 1px solid white; color: white; text-decoration: none; padding: 0.5rem 1rem; border-radius: 4px;">Sign Up</a>
+                </span>
+                
+                <!-- User Menu (Shown when logged in) -->
+                <span id="userNav" style="display: none; gap: 1rem; align-items: center;">
+                    <a href="post-job.html" id="postJobBtn" class="btn-primary" style="display: none; background-color: #1976d2; color: white; text-decoration: none; padding: 0.5rem 1rem; border-radius: 4px; align-items: center;">
+                        <i class="material-icons" style="font-size: 1.1em; margin-right: 4px; vertical-align: middle;">post_add</i>
+                        <span>Post a Job</span>
+                    </a>
+                    <a href="#" id="myJobsBtn" class="btn-text" style="color: white; text-decoration: none; padding: 0.5rem 0;">My Jobs</a>
+                    <div class="user-avatar" id="userAvatar" style="width: 36px; height: 36px; border-radius: 50%; background-color: #1976d2; color: white; display: flex; align-items: center; justify-content: center; font-weight: 600; cursor: pointer; font-size: 0.9em;">
+                        <span id="userInitials">U</span>
+                    </div>
+                </span>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="hero">
+            <h2>Find Your Dream Job</h2>
+            <p>Discover the perfect opportunity that matches your skills and aspirations</p>
+        </section>
+        
+        <form id="searchForm" class="search-form">
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="Job title, company, or keyword">
+                <button type="submit" class="btn-primary">
+                    <i class="material-icons">search</i> Search
+                </button>
+            </div>
+            
+            <div class="filters">
+                <div class="form-group">
+                    <label for="jobTypeFilter">Job Type</label>
+                    <select id="jobTypeFilter">
+                        <option value="">All Types</option>
+                        <option value="Full-time">Full-time</option>
+                        <option value="Part-time">Part-time</option>
+                        <option value="Contract">Contract</option>
+                        <option value="Internship">Internship</option>
+                        <option value="Remote">Remote</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="locationFilter">Location</label>
+                    <input type="text" id="locationFilter" placeholder="Any location">
+                </div>
+            </div>
+        </form>
+        
+        <div class="job-listings-header">
+            <h3 id="listingsTitle">Latest Job Listings</h3>
+            <div id="searchResultsCount" class="results-count"></div>
+        </div>
+        
+        <div id="jobListings" class="job-listings">
+            <!-- Job listings will be dynamically inserted here -->
+        </div>
+        
+        <div id="noResults" class="no-results" style="display: none;">
+            <i class="material-icons">search_off</i>
+            <h3>No jobs found</h3>
+            <p>Try adjusting your search or filter criteria</p>
+        </div>
+        
+        <div id="loadingIndicator" class="loading" style="display: none;">
+            <div class="spinner"></div>
+            <p>Loading jobs...</p>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 TalentLink. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Load scripts at the end of the body -->
+    <script src="js/auth.js"></script>
+    <script>
+        // Wait for the DOM to be fully loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize the UI based on user role
+            updateUIBasedOnRole();
+        });
+    </script>
+    <script src="js/main.js"></script>
+</body>
+</html>

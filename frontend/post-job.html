@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post a Job - TalentLink</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .post-job-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .post-job-header {
+            margin-top: 3.5rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        .post-job-header h1 {
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+        .post-job-header p {
+            color: #666;
+            margin-top: 0;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #444;
+        }
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        .form-control:focus {
+            outline: none;
+            border-color: #4a6cf7;
+            box-shadow: 0 0 0 2px rgba(74, 108, 247, 0.2);
+        }
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+        }
+        .form-row {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .form-col {
+            flex: 1;
+        }
+        .btn-submit {
+            background-color: #4a6cf7;
+            color: white;
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 4px;
+            font-size: 1rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s;
+        }
+        .btn-submit:hover {
+            background-color: #3a5bd9;
+        }
+        .btn-submit:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        .btn-submit .material-icons {
+            margin-right: 8px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <a href="index.html" class="logo">TalentLink</a>
+            <div class="nav-links" id="navLinks">
+                <a href="index.html">Home</a>
+                <a href="#jobs">Jobs</a>
+                <a href="#companies">Companies</a>
+                <a href="#about">About</a>
+                <!-- Post a Job Button - Only visible to employers -->
+                <a href="post-job.html" class="btn btn-primary" id="postJobBtn" style="display: none; margin-left: 10px;">
+                    <i class="material-icons" style="font-size: 16px; vertical-align: middle; margin-right: 4px;">add</i>
+                    Post a Job
+                </a>
+                <!-- Auth State Container - Will be managed by auth.js -->
+                <div id="authState">
+                    <!-- Login/Signup Buttons (Shown when not logged in) -->
+                    <div class="auth-buttons" id="authButtons">
+                        <a href="login.html" class="btn btn-outline" id="loginLink">Login</a>
+                        <a href="signup.html" class="btn btn-primary" id="registerLink">Sign Up</a>
+                    </div>
+                    
+                    <!-- User Menu (Shown when logged in) -->
+                    <div class="user-menu" id="userMenu" style="display: none;">
+                        <div class="user-dropdown">
+                            <button class="user-avatar" id="userAvatar">
+                                <span class="material-icons">account_circle</span>
+                                <span id="userInitials" class="user-initials"></span>
+                            </button>
+                            <div class="dropdown-content" id="dropdownMenu">
+                                <div class="user-info">
+                                    <div id="userName" class="user-name">Loading...</div>
+                                    <div id="userEmail" class="user-email"></div>
+                                </div>
+                                <div class="dropdown-divider"></div>
+                                <a href="profile.html"><i class="material-icons">person</i> My Profile</a>
+                                <a href="my-jobs.html"><i class="material-icons">work</i> My Jobs</a>
+                                <a href="settings.html"><i class="material-icons">settings</i> Settings</a>
+                                <div class="dropdown-divider"></div>
+                                <a href="#" id="logoutBtn"><i class="material-icons">logout</i> Logout</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button class="hamburger" id="hamburger">
+                <span class="material-icons">menu</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container">
+        <div class="post-job-container">
+            <div class="post-job-header">
+                <h1>Post a New Job</h1>
+                <p>Fill in the details below to post your job listing</p>
+            </div>
+            
+            <form id="postJobForm">
+                <div class="form-group">
+                    <label for="jobTitle">Job Title *</label>
+                    <input type="text" id="jobTitle" class="form-control" required>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label for="jobType">Job Type *</label>
+                            <select id="jobType" class="form-control" required>
+                                <option value="">Select job type</option>
+                                <option value="full_time">Full-time</option>
+                                <option value="part_time">Part-time</option>
+                                <option value="contract">Contract</option>
+                                <option value="internship">Internship</option>
+                                <option value="remote">Remote</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label for="location">Location *</label>
+                            <input type="text" id="location" class="form-control" placeholder="e.g., New York, NY" required>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label for="salaryMin">Salary Range (Min)</label>
+                            <input type="number" id="salaryMin" class="form-control" placeholder="e.g., 50000">
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label for="salaryMax">Salary Range (Max)</label>
+                            <input type="number" id="salaryMax" class="form-control" placeholder="e.g., 80000">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="applicationDeadline">Application Deadline *</label>
+                    <input type="date" id="applicationDeadline" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="jobDescription">Job Description *</label>
+                    <textarea id="jobDescription" class="form-control" required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="requirements">Requirements *</label>
+                    <textarea id="requirements" class="form-control" placeholder="List the requirements and qualifications" required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="benefits">Benefits (Optional)</label>
+                    <textarea id="benefits" class="form-control" placeholder="List any benefits you offer"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="applicationUrl">Application URL/Email *</label>
+                    <input type="text" id="applicationUrl" class="form-control" placeholder="https://yourcompany.com/apply or email@example.com" required>
+                </div>
+                
+                <div class="form-group" style="margin-top: 2rem;">
+                    <button type="submit" class="btn-submit">
+                        <i class="material-icons">post_add</i>
+                        Post Job
+                    </button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-about">
+                    <h3>TalentLink</h3>
+                    <p>Connecting top talent with leading companies worldwide. Find your dream job or your next great hire.</p>
+                </div>
+                <div class="footer-links">
+                    <h4>For Job Seekers</h4>
+                    <a href="#">Browse Jobs</a>
+                    <a href="#">Create Profile</a>
+                    <a href="#">Career Advice</a>
+                </div>
+                <div class="footer-links">
+                    <h4>For Employers</h4>
+                    <a href="post-job.html">Post a Job</a>
+                    <a href="#">Browse Candidates</a>
+                    <a href="#">Pricing</a>
+                </div>
+                <div class="footer-links">
+                    <h4>Company</h4>
+                    <a href="#about">About Us</a>
+                    <a href="#">Contact</a>
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 TalentLink. All rights reserved.</p>
+                <div class="social-links">
+                    <a href="#" aria-label="Facebook"><i class="material-icons">facebook</i></a>
+                    <a href="#" aria-label="Twitter"><i class="material-icons">twitter</i></a>
+                    <a href="#" aria-label="LinkedIn"><i class="material-icons">linkedin</i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/utils.js"></script>
+    <script>
+        // Utility function to get CSRF token from cookies
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+            return null;
+        }
+
+        // Function to show toast notifications
+        function showToast(message, type = 'info') {
+            // Implementation of showToast function
+            console.log(`[${type.toUpperCase()}] ${message}`);
+            // Add your toast notification UI code here
+        }
+
+        // Add auth check to ensure only employers can access this page
+        async function checkEmployerAccess() {
+            try {
+                // Wait for auth to be initialized
+                if (!window.TalentLink || !window.TalentLink.auth) {
+                    await new Promise(resolve => {
+                        const checkAuth = setInterval(() => {
+                            if (window.TalentLink?.auth) {
+                                clearInterval(checkAuth);
+                                resolve();
+                            }
+                        }, 100);
+                    });
+                }
+                
+                const auth = window.TalentLink.auth;
+                
+                // Check if user is authenticated
+                if (!auth.isLoggedIn()) {
+                    // Get current URL for redirect after login
+                    const currentUrl = window.location.pathname;
+                    window.location.href = `login.html?next=${encodeURIComponent(currentUrl)}`;
+                    return false;
+                }
+                
+                // Ensure we have the latest user data
+                const user = await auth.fetchCurrentUser();
+                console.log('Current user data:', user);
+                
+                // Check if user is an employer
+                if (!user || user.user_type !== 'employer') {
+                    console.log('User is not an employer, redirecting...');
+                    alert('Only employers can post jobs. Please create a company profile first.');
+                    window.location.href = 'company-profile.html';
+                    return false;
+                }
+                
+                // If we get here, user is an employer
+                console.log('User is an employer, allowing access to post job');
+                return true;
+                
+            } catch (error) {
+                console.error('Error checking auth:', error);
+                // On error, redirect to login with current URL as next
+                const currentUrl = window.location.pathname;
+                window.location.href = `login.html?next=${encodeURIComponent(currentUrl)}`;
+                return false;
+            }
+        }
+
+        // Handle form submission
+        async function handleJobPosting(event) {
+            event.preventDefault();
+            
+            const form = event.target;
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const originalBtnText = submitBtn.innerHTML;
+            
+            try {
+                // Disable button and show loading state
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="material-icons">hourglass_empty</i> Posting...';
+                
+                // Check if user is authorized
+                const isAuthorized = await checkEmployerAccess();
+                if (!isAuthorized) {
+                    return;
+                }
+                
+                // Get form data
+                const jobData = {
+                    title: document.getElementById('jobTitle').value,
+                    job_type: document.getElementById('jobType').value,
+                    location: document.getElementById('location').value,
+                    description: document.getElementById('jobDescription').value,
+                    requirements: document.getElementById('requirements').value,
+                    benefits: document.getElementById('benefits').value || '',
+                    application_url: document.getElementById('applicationUrl').value,
+                    salary_range: {
+                        min: document.getElementById('salaryMin').value || null,
+                        max: document.getElementById('salaryMax').value || null
+                    },
+                    is_active: true
+                };
+                
+                // Get the auth token from localStorage
+                let token = null;
+                const authData = localStorage.getItem('auth');
+                if (authData) {
+                    try {
+                        const auth = JSON.parse(authData);
+                        token = auth.token || auth.key;
+                    } catch (e) {
+                        console.error('Error parsing auth data:', e);
+                    }
+                }
+                
+                // If token is still not found, try to get it directly from localStorage
+                if (!token) {
+                    token = localStorage.getItem('token') || localStorage.getItem('auth_token');
+                }
+                
+                if (!token) {
+                    throw new Error('You need to be logged in to post a job');
+                }
+                
+                // Clean up the token (remove quotes if present)
+                token = token.replace(/^"|"$/g, '');
+                const csrfToken = getCookie('csrftoken');
+                
+                // Prepare headers
+                const headers = {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Authorization': `Token ${token}`
+                };
+                
+                // Add CSRF token if it exists
+                if (csrfToken) {
+                    headers['X-CSRFToken'] = csrfToken;
+                }
+                
+                // Make the API call to create a new job posting
+                const apiUrl = 'http://localhost:8000/api/job-postings/';
+                console.log('Making request to:', apiUrl);
+                
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: headers,
+                    body: JSON.stringify({
+                        title: jobData.title,
+                        job_type: jobData.job_type,
+                        location: jobData.location,
+                        description: jobData.description,
+                        requirements: jobData.requirements,
+                        benefits: jobData.benefits,
+                        application_url: jobData.application_url,
+                        salary: jobData.salary_range.min ? 
+                            `${jobData.salary_range.min}-${jobData.salary_range.max || ''}` : '',
+                        is_active: true,
+                        application_deadline: document.getElementById('applicationDeadline').value
+                    })
+                });
+                
+                // Handle response
+                const responseText = await response.text();
+                let responseData;
+                
+                try {
+                    responseData = responseText ? JSON.parse(responseText) : {};
+                } catch (e) {
+                    console.error('Error parsing response as JSON:', e);
+                    throw new Error(`Invalid response from server: ${responseText}`);
+                }
+                
+                if (!response.ok) {
+                    console.error('Error response data:', responseData);
+                    throw new Error(responseData.detail || responseData.message || 'Failed to post job');
+                }
+                
+                console.log('Job posted successfully:', responseData);
+                showToast('Job posted successfully!', 'success');
+                
+                // Redirect to jobs page after a short delay
+                setTimeout(() => {
+                    window.location.href = 'my-jobs.html';
+                }, 1500);
+                
+            } catch (error) {
+                console.error('Error posting job:', error);
+                showToast(`Error: ${error.message}`, 'error');
+            } finally {
+                // Reset button state
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnText;
+            }
+        }
+
+        // Initialize the page when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('postJobForm');
+            if (form) {
+                form.addEventListener('submit', handleJobPosting);
+            }
+            
+            // Run the auth check
+            checkEmployerAccess();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - TalentLink</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .auth-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 80vh;
+            padding: 2rem 1rem;
+        }
+        .auth-box {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+        }
+        .auth-box h2 {
+            margin-top: 0;
+            margin-bottom: 2rem;
+            text-align: center;
+            color: #333;
+        }
+        .form-row {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .form-group {
+            flex: 1;
+            margin-bottom: 0;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #555;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        .btn-primary {
+            width: 100%;
+            padding: 0.75rem;
+            background-color: #4a6cf7;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .btn-primary:hover {
+            background-color: #3a5bd9;
+        }
+        .auth-footer {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: #666;
+        }
+        .auth-footer a {
+            color: #4a6cf7;
+            text-decoration: none;
+        }
+        .error-message {
+            color: #e53e3e;
+            margin: 1rem 0;
+            text-align: center;
+            display: none;
+        }
+        .success-message {
+            color: #38a169;
+            margin: 1rem 0;
+            text-align: center;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <a href="index.html" class="logo">TalentLink</a>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="index.html#jobs">Jobs</a>
+                <a href="index.html#companies">Companies</a>
+                <a href="index.html#about">About</a>
+                <a href="index.html#contact">Contact</a>
+                <div class="auth-buttons">
+                    <a href="login.html" class="btn btn-outline">Login</a>
+                    <a href="register.html" class="btn btn-primary active">Register</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Registration Form -->
+    <div class="auth-container">
+        <div class="auth-box">
+            <h2>Create an Account</h2>
+            <form id="registerForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="firstName">First Name</label>
+                        <input type="text" id="firstName" name="first_name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="lastName">Last Name</label>
+                        <input type="text" id="lastName" name="last_name" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirm Password</label>
+                        <input type="password" id="confirmPassword" name="password2" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="userType">I am a</label>
+                    <select id="userType" name="user_type" required>
+                        <option value="candidate">Job Seeker</option>
+                        <option value="employer">Employer</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">Create Account</button>
+                </div>
+                <div class="error-message" id="errorMessage">
+                    There was an error creating your account. Please try again.
+                </div>
+                <div class="success-message" id="successMessage">
+                    Registration successful! Redirecting to login...
+                </div>
+                <div class="auth-footer">
+                    Already have an account? <a href="login.html">Sign in</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Global error handler
+        window.handleAuthError = function(error) {
+            console.error('Auth error:', error);
+            const errorMessage = document.getElementById('errorMessage');
+            if (errorMessage) {
+                errorMessage.textContent = 'Authentication system error. Please try again later.';
+                errorMessage.style.display = 'block';
+            }
+        };
+    </script>
+    <script src="js/api.js"></script>
+    <script src="js/auth.js" onerror="handleAuthError()"></script>
+    <script>
+        // Wait for the auth.js to be fully loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            const registerForm = document.getElementById('registerForm');
+            const errorMessage = document.getElementById('errorMessage');
+            const successMessage = document.getElementById('successMessage');
+
+            // Function to check if auth is loaded
+            const checkAuthLoaded = () => {
+                return window.TalentLink && window.TalentLink.auth;
+            };
+
+            // Initialize form after auth is loaded
+            const initForm = () => {
+                if (!checkAuthLoaded()) {
+                    console.error('Auth module not loaded!');
+                    showError('Authentication system is not available. Please try again later.');
+                    return false;
+                }
+                return true;
+            };
+
+            // Check auth immediately
+            if (!initForm()) {
+                // If not loaded, check again after a delay
+                const authCheckInterval = setInterval(() => {
+                    if (checkAuthLoaded()) {
+                        clearInterval(authCheckInterval);
+                        if (initForm()) {
+                            setupFormHandlers();
+                        }
+                    }
+                }, 100);
+                
+                // Timeout after 3 seconds
+                setTimeout(() => {
+                    clearInterval(authCheckInterval);
+                    if (!checkAuthLoaded()) {
+                        showError('Failed to load authentication system. Please refresh the page.');
+                    }
+                }, 3000);
+                return;
+            }
+
+            // If we get here, auth is already loaded
+            setupFormHandlers();
+            
+            function setupFormHandlers() {
+                if (!registerForm) return;
+                
+                registerForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    
+                    // Show loading state
+                    const submitBtn = registerForm.querySelector('button[type="submit"]');
+                    const originalBtnText = submitBtn.innerHTML;
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = 'Creating Account...';
+                    
+                    try {
+                        // Basic client-side validation
+                        const firstName = document.getElementById('firstName').value.trim();
+                        const lastName = document.getElementById('lastName').value.trim();
+                        const email = document.getElementById('email').value.trim();
+                        const username = document.getElementById('username').value.trim();
+                        const password = document.getElementById('password').value;
+                        const confirmPassword = document.getElementById('confirmPassword').value;
+                        const userType = document.getElementById('userType').value;
+                        
+                        // Validate required fields
+                        if (!firstName || !lastName || !email || !username || !password || !confirmPassword) {
+                            throw new Error('All fields are required');
+                        }
+                        
+                        if (password !== confirmPassword) {
+                            throw new Error('Passwords do not match');
+                        }
+                        
+                        if (password.length < 8) {
+                            throw new Error('Password must be at least 8 characters long');
+                        }
+                        
+                        // Prepare registration data with exact field names expected by backend
+                        const registrationData = {
+                            username: username,
+                            email: email,
+                            password1: password,
+                            password2: confirmPassword,
+                            first_name: firstName,
+                            last_name: lastName || firstName, // Fallback to firstName if lastName is empty
+                            user_type: userType || 'candidate' // Default to 'candidate' if not specified
+                        };
+                        
+                        console.log('Registration data prepared:', {
+                            ...registrationData,
+                            password1: '***',
+                            password2: '***'
+                        });
+                        
+                        console.log('Registration data being sent:', {
+                            ...registrationData,
+                            password: '[HIDDEN]',
+                            password2: '[HIDDEN]'
+                        });
+                        
+                        console.log('Attempting registration with:', {
+                            ...registrationData,
+                            password1: '••••••',
+                            password2: '••••••'
+                        });
+                        
+                        // Use the auth instance from window.TalentLink
+                        const auth = window.TalentLink?.auth;
+                        if (!auth) {
+                            throw new Error('Authentication system not available');
+                        }
+                        
+                        // Call the register method
+                        const result = await auth.register(registrationData);
+                        
+                        console.log('Registration result:', result);
+                        
+                        if (result && result.success) {
+                            showSuccess('Registration successful! Redirecting to login...');
+                            // Redirect to login page with success message
+                            setTimeout(() => {
+                                window.location.href = 'login.html?registered=true';
+                            }, 1500);
+                        } else {
+                            // Improved error handling: show detailed backend error
+                            let errorMsg = result.error || 'Registration failed. Please try again.';
+                            if (result.details) {
+                                if (typeof result.details === 'string') {
+                                    errorMsg = result.details;
+                                } else if (typeof result.details === 'object') {
+                                    const firstKey = Object.keys(result.details)[0];
+                                    errorMsg = result.details[firstKey];
+                                }
+                            }
+                            showError(errorMsg);
+                        }
+                } catch (error) {
+                    console.error('Registration error:', error);
+                    
+                    // Extract error message from different possible error formats
+                    let errorMsg = 'Registration failed. Please try again.';
+                    
+                    if (error.response) {
+                        // Handle HTTP errors
+                        if (error.response.data) {
+                            const data = error.response.data;
+                            if (typeof data === 'string') {
+                                errorMsg = data;
+                            } else if (data.message) {
+                                errorMsg = data.message;
+                            } else if (data.detail) {
+                                errorMsg = data.detail;
+                            } else if (data.non_field_errors) {
+                                errorMsg = Array.isArray(data.non_field_errors) 
+                                    ? data.non_field_errors[0]
+                                    : data.non_field_errors;
+                            } else {
+                                // Try to get the first error message from the response
+                                const errorKeys = Object.keys(data).filter(key => key !== 'status_code');
+                                if (errorKeys.length > 0) {
+                                    const firstError = data[errorKeys[0]];
+                                    if (Array.isArray(firstError)) {
+                                        errorMsg = firstError[0];
+                                    } else if (typeof firstError === 'string') {
+                                        errorMsg = firstError;
+                                    } else if (firstError && typeof firstError === 'object') {
+                                        errorMsg = Object.values(firstError)[0];
+                                    }
+                                }
+                            }
+                        } else {
+                            errorMsg = `Server error: ${error.response.status} ${error.response.statusText}`;
+                        }
+                    } else if (error.request) {
+                        // The request was made but no response was received
+                        errorMsg = 'No response from server. Please check your internet connection.';
+                    } else if (error.message) {
+                        // Something happened in setting up the request
+                        errorMsg = error.message;
+                    }
+                    
+                    // Clean up error message
+                    errorMsg = errorMsg.replace(/^\[.*?\]\s*/, ''); // Remove any [ErrorType] prefix
+                    errorMsg = errorMsg.charAt(0).toUpperCase() + errorMsg.slice(1); // Capitalize first letter
+                    
+                    // Special handling for common error messages
+                    if (errorMsg.toLowerCase().includes('already exists')) {
+                        if (errorMsg.toLowerCase().includes('email')) {
+                            errorMsg = 'This email is already registered. Please use a different email or try logging in.';
+                        } else if (errorMsg.toLowerCase().includes('username')) {
+                            errorMsg = 'This username is already taken. Please choose a different one.';
+                        }
+                    } else if (errorMsg.toLowerCase().includes('password') && errorMsg.toLowerCase().includes('too common')) {
+                        errorMsg = 'Password is too common. Please choose a stronger password.';
+                    } else if (errorMsg.toLowerCase().includes('invalid') && errorMsg.toLowerCase().includes('email')) {
+                        errorMsg = 'Please enter a valid email address.';
+                    }
+                    
+                    showError(errorMsg);
+                    
+                    // Re-enable the submit button
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalBtnText;
+                    
+                    // Focus on the first problematic field if we can identify it
+                    try {
+                        if (error.response?.data) {
+                            const errorData = error.response.data;
+                            let fieldToFocus = null;
+                            
+                            // Check common field names
+                            const fieldOrder = ['email', 'username', 'password1', 'password2', 'first_name', 'last_name'];
+                            for (const field of fieldOrder) {
+                                if (errorData[field]) {
+                                    fieldToFocus = document.getElementById(field === 'password1' ? 'password' : 
+                                                                         field === 'password2' ? 'confirmPassword' :
+                                                                         field === 'first_name' ? 'firstName' :
+                                                                         field === 'last_name' ? 'lastName' : field);
+                                    if (fieldToFocus) break;
+                                }
+                            }
+                            
+                            if (fieldToFocus) {
+                                fieldToFocus.focus();
+                                fieldToFocus.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            }
+                        }
+                    } catch (focusError) {
+                        console.warn('Could not focus on error field:', focusError);
+                    }
+                }
+            });
+            } // Close setupFormHandlers
+            
+            function showError(message) {
+                errorMessage.textContent = message;
+                errorMessage.style.display = 'block';
+                successMessage.style.display = 'none';
+                setTimeout(() => {
+                    errorMessage.style.display = 'none';
+                }, 5000);
+            }
+            
+            function showSuccess(message = 'Registration successful!') {
+                errorMessage.style.display = 'none';
+                successMessage.textContent = message;
+                successMessage.style.display = 'block';
+                registerForm.reset();
+                
+                // Hide form after successful submission
+                const formGroups = registerForm.querySelectorAll('.form-group');
+                formGroups.forEach(group => {
+                    if (!group.classList.contains('form-group--submit')) {
+                        group.style.display = 'none';
+                    }
+                });
+                
+                // Update submit button to show success state
+                const submitBtn = registerForm.querySelector('button[type="submit"]');
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<span class="material-icons" style="vertical-align: middle; margin-right: 5px;">check_circle</span> Success!';
+                    submitBtn.style.backgroundColor = '#38a169';
+                    submitBtn.style.cursor = 'default';
+                }
+            }
+        });
+    </script>
+</body>
+</html>

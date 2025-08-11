@@ -1,0 +1,322 @@
+/* Navigation Bar Fixes */
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background-color: #fff;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    padding: 15px 0;
+}
+
+.navbar .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+    transition: all 0.3s ease;
+}
+
+.hamburger {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #212529;
+    padding: 5px;
+}
+
+/* Mobile Menu Styles */
+@media (max-width: 768px) {
+    .hamburger {
+        display: block;
+    }
+
+    .nav-links {
+        position: fixed;
+        top: 75px;
+        left: 0;
+        right: 0;
+        background-color: white;
+        flex-direction: column;
+        padding: 20px;
+        box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        transform: translateY(-150%);
+        opacity: 0;
+        visibility: hidden;
+        z-index: 998;
+        gap: 15px;
+    }
+
+    .nav-links.active {
+        transform: translateY(0);
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .nav-links a {
+        width: 100%;
+        padding: 10px 0;
+        text-align: center;
+    }
+
+    .auth-buttons {
+        flex-direction: column;
+        width: 100%;
+        margin-left: 0;
+        gap: 10px;
+    }
+
+    .auth-buttons .btn {
+        width: 100%;
+        text-align: center;
+    }
+}
+
+/* Application Page Styles */
+.application-container {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 2.5rem 2rem 2rem 2rem;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 24px rgba(74, 108, 247, 0.10), 0 1.5px 6px rgba(0,0,0,0.04);
+}
+
+/* Auto-fill Section Styles */
+.auto-fill-section {
+  background: linear-gradient(135deg, #f8f9ff 0%, #e8f2ff 100%);
+  border: 1px solid #e1e8ff;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.auto-fill-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #4a6cf7, #6c8fff);
+}
+
+.auto-fill-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.auto-fill-header h3 {
+  margin: 0;
+  color: #2d3748;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.auto-fill-header .material-icons {
+  color: #4a6cf7;
+  font-size: 1.5rem;
+}
+
+.auto-fill-description {
+  color: #6b7280;
+  margin-bottom: 1.25rem;
+  line-height: 1.5;
+  font-size: 0.95rem;
+}
+
+.auto-fill-actions {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.auto-fill-actions .btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.auto-fill-actions .btn-primary {
+  background: #4a6cf7;
+  color: white;
+  box-shadow: 0 2px 8px rgba(74, 108, 247, 0.25);
+}
+
+.auto-fill-actions .btn-primary:hover {
+  background: #274bb6;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(74, 108, 247, 0.35);
+}
+
+.auto-fill-status {
+  margin-top: 1rem;
+  padding: 1rem;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid #e1e8ff;
+}
+
+.status-message {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: #4a6cf7;
+  font-weight: 500;
+}
+
+.status-message.success {
+  color: #28a745;
+}
+
+.status-message.error {
+  color: #dc3545;
+}
+
+.status-message .material-icons {
+  font-size: 1.25rem;
+}
+
+.application-header {
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e0e0e0;
+}
+.application-header h1 {
+  font-size: 2.1rem;
+  color: #2d3748;
+  margin-bottom: 0.25rem;
+}
+.application-header p {
+  color: #6b7280;
+  font-size: 1.1rem;
+}
+.form-group {
+  margin-bottom: 1.5rem;
+}
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #374151;
+}
+.form-control {
+  width: 100%;
+  padding: 0.85rem;
+  border: 1.5px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 1.05rem;
+  background: #f9fafb;
+  transition: border-color 0.2s;
+}
+.form-control:focus {
+  border-color: #4a6cf7;
+  outline: none;
+  background: #fff;
+}
+textarea.form-control {
+  min-height: 150px;
+  resize: vertical;
+}
+.btn-submit {
+  background-color: #4a6cf7;
+  color: white;
+  border: none;
+  padding: 0.9rem 2.5rem;
+  border-radius: 6px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 2px 8px rgba(74, 108, 247, 0.10);
+  transition: background 0.2s, box-shadow 0.2s, transform 0.1s;
+}
+.btn-submit:hover, .btn-submit:focus {
+  background-color: #274bb6;
+  box-shadow: 0 4px 16px rgba(74, 108, 247, 0.18);
+  transform: translateY(-2px) scale(1.03);
+}
+.btn.btn-outline {
+  background: none;
+  color: #4a6cf7;
+  border: 1.5px solid #4a6cf7;
+  padding: 0.9rem 2.5rem;
+  border-radius: 6px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: background 0.2s, color 0.2s;
+}
+.btn.btn-outline:hover, .btn.btn-outline:focus {
+  background: #4a6cf7;
+  color: #fff;
+}
+.required:after {
+  content: " *";
+  color: #e74c3c;
+}
+.success-message {
+  text-align: center;
+  padding: 2.5rem 1rem;
+}
+.success-message .material-icons {
+  font-size: 4rem;
+  color: #27ae60;
+  margin-bottom: 1rem;
+}
+.success-message h2 {
+  color: #2d3748;
+  margin-bottom: 0.5rem;
+}
+.success-message p {
+  color: #4a5568;
+  font-size: 1.15rem;
+}
+.form-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+.text-muted {
+  color: #6b7280;
+  font-size: 1rem;
+}
+.error-message {
+  text-align: center;
+  color: #e53e3e;
+  background: #fff0f0;
+  border: 1.5px solid #e53e3e;
+  border-radius: 8px;
+  padding: 2rem 1rem;
+  margin: 2rem 0;
+}
+.error-message .material-icons {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+} 

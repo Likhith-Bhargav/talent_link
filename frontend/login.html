@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - TalentLink</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .auth-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 80vh;
+            padding: 2rem 1rem;
+        }
+        .auth-box {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+        .auth-box h2 {
+            margin-top: 0;
+            margin-bottom: 2rem;
+            text-align: center;
+            color: #333;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #555;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        .btn-primary {
+            width: 100%;
+            padding: 0.75rem;
+            background-color: #4a6cf7;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .btn-primary:hover {
+            background-color: #3a5bd9;
+        }
+        .auth-footer {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: #666;
+        }
+        .auth-footer a {
+            color: #4a6cf7;
+            text-decoration: none;
+        }
+        .error-message {
+            color: #e53e3e;
+            margin-top: 1rem;
+            text-align: center;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <a href="index.html" class="logo">TalentLink</a>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="index.html#jobs">Jobs</a>
+                <a href="index.html#companies">Companies</a>
+                <a href="index.html#about">About</a>
+                <a href="index.html#contact">Contact</a>
+                <div class="auth-buttons">
+                    <a href="login.html" class="btn btn-outline active">Login</a>
+                    <a href="register.html" class="btn btn-primary">Register</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Login Form -->
+    <div class="auth-container">
+        <div class="auth-box">
+            <h2>Welcome Back</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="username">Username or Email</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">Login</button>
+                </div>
+                <div class="error-message" id="errorMessage">
+                    Invalid username or password. Please try again.
+                </div>
+                <div class="auth-footer">
+                    Don't have an account? <a href="register.html">Sign up</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Global error handler
+        window.handleAuthError = function(error) {
+            console.error('Auth error:', error);
+            const errorMessage = document.getElementById('errorMessage');
+            if (errorMessage) {
+                errorMessage.textContent = 'Authentication system error. Please try again later.';
+                errorMessage.style.display = 'block';
+            }
+        };
+    </script>
+    <script src="js/api.js"></script>
+    <script src="js/auth.js" onerror="handleAuthError()"></script>
+    <script>
+        // Wait for the auth.js to be fully loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            const loginForm = document.getElementById('loginForm');
+            const errorMessage = document.getElementById('errorMessage');
+            const usernameInput = document.getElementById('username');
+            const passwordInput = document.getElementById('password');
+
+            // Function to check if auth is loaded
+            const checkAuthLoaded = () => {
+                return window.TalentLink && window.TalentLink.auth;
+            };
+
+            // Initialize form after auth is loaded
+            const initForm = () => {
+                if (!checkAuthLoaded()) {
+                    console.error('Auth module not loaded!');
+                    showError('Authentication system is not available. Please try again later.');
+                    return false;
+                }
+                return true;
+            };
+
+            // Check auth immediately
+            if (!initForm()) {
+                // If not loaded, check again after a delay
+                const authCheckInterval = setInterval(() => {
+                    if (checkAuthLoaded()) {
+                        clearInterval(authCheckInterval);
+                        if (initForm()) {
+                            setupFormHandlers();
+                        }
+                    }
+                }, 100);
+                
+                // Timeout after 3 seconds
+                setTimeout(() => {
+                    clearInterval(authCheckInterval);
+                    if (!checkAuthLoaded()) {
+                        showError('Failed to load authentication system. Please refresh the page.');
+                    }
+                }, 3000);
+                return;
+            }
+
+            // If we get here, auth is already loaded
+            setupFormHandlers();
+            
+            function setupFormHandlers() {
+                if (!loginForm) return;
+                
+                loginForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    
+                    // Show loading state
+                    const submitBtn = loginForm.querySelector('button[type="submit"]');
+                    const originalBtnText = submitBtn.innerHTML;
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = 'Signing in...';
+                    
+                    try {
+                        const username = usernameInput.value.trim();
+                        const password = passwordInput.value;
+                        
+                        // Basic validation
+                        if (!username || !password) {
+                            throw new Error('Please enter both username/email and password');
+                        }
+                        
+                        // Use the auth instance from window.TalentLink
+                        const auth = window.TalentLink?.auth;
+                        if (!auth) {
+                            throw new Error('Authentication system not available');
+                        }
+                        
+                        // Prepare login credentials
+                        const credentials = {
+                            password: password
+                        };
+                        
+                        // Set either email or username based on input
+                        if (username.includes('@')) {
+                            credentials.email = username;
+                        } else {
+                            credentials.username = username;
+                        }
+                        
+                        console.log('Attempting login with:', { ...credentials, password: '••••••' });
+                        
+                        // Call the login method
+                        const result = await auth.login(credentials);
+                        
+                        if (result.success) {
+                            console.log('Login successful, redirecting...');
+                            // Ensure the user data is saved before redirecting
+                            localStorage.setItem('token', result.token);
+                            
+                            // Fetch and store user data
+                            try {
+                                const userData = await auth.fetchCurrentUser();
+                                auth.setCurrentUser(userData);
+                                
+                                // Get the redirect URL from query params or default to index.html
+                                const urlParams = new URLSearchParams(window.location.search);
+                                let redirectUrl = urlParams.get('next') || 'index.html';
+                                
+                                // Ensure redirect URL is not empty and is a relative path
+                                if (!redirectUrl.startsWith('/') && !redirectUrl.startsWith('http')) {
+                                    // If it's a relative path, ensure it starts with /
+                                    if (!redirectUrl.startsWith('/')) {
+                                        redirectUrl = '/' + redirectUrl;
+                                    }
+                                }
+                                
+                                console.log('Login successful, redirecting to:', redirectUrl);
+                                
+                                // Force a full page reload to ensure all scripts reinitialize
+                                window.location.href = redirectUrl;
+                            } catch (error) {
+                                console.error('Error fetching user data:', error);
+                                // On error, still redirect to index.html instead of dashboard
+                                window.location.href = 'index.html?t=' + Date.now();
+                            }
+                        } else {
+                            const errorMsg = result.error || 'Login failed. Please check your credentials and try again.';
+                            console.error('Login failed:', errorMsg);
+                            throw new Error(errorMsg);
+                        }
+                    } catch (error) {
+                        console.error('Login error:', error);
+                        
+                        // Extract error message from different possible error formats
+                        let errorMsg = 'An error occurred during login. Please try again.';
+                        
+                        if (error.response) {
+                            // Handle HTTP errors
+                            if (error.response.data) {
+                                const data = error.response.data;
+                                if (typeof data === 'string') {
+                                    errorMsg = data;
+                                } else if (data.detail) {
+                                    errorMsg = data.detail;
+                                } else if (data.non_field_errors) {
+                                    errorMsg = Array.isArray(data.non_field_errors) 
+                                        ? data.non_field_errors[0]
+                                        : data.non_field_errors;
+                                } else if (data.username || data.email || data.password) {
+                                    // Handle field-specific errors
+                                    if (data.username) {
+                                        errorMsg = Array.isArray(data.username) ? data.username[0] : data.username;
+                                    } else if (data.email) {
+                                        errorMsg = Array.isArray(data.email) ? data.email[0] : data.email;
+                                    } else if (data.password) {
+                                        errorMsg = Array.isArray(data.password) ? data.password[0] : data.password;
+                                    }
+                                }
+                            } else {
+                                errorMsg = `Server error: ${error.response.status} ${error.response.statusText}`;
+                            }
+                        } else if (error.request) {
+                            // The request was made but no response was received
+                            errorMsg = 'No response from server. Please check your internet connection.';
+                        } else if (error.message) {
+                            // Something happened in setting up the request
+                            errorMsg = error.message;
+                        }
+                        
+                        // Clean up error message
+                        errorMsg = errorMsg.replace(/^\[.*?\]\s*/, ''); // Remove any [ErrorType] prefix
+                        errorMsg = errorMsg.charAt(0).toUpperCase() + errorMsg.slice(1); // Capitalize first letter
+                        
+                        // Special handling for common error messages
+                        if (errorMsg.toLowerCase().includes('unable to log in with provided credentials')) {
+                            errorMsg = 'Invalid username/email or password. Please try again.';
+                        } else if (errorMsg.toLowerCase().includes('account is not active')) {
+                            errorMsg = 'Your account is not active. Please check your email for an activation link.';
+                        } else if (errorMsg.toLowerCase().includes('email is not verified')) {
+                            errorMsg = 'Please verify your email address before logging in. Check your inbox for a verification link.';
+                        }
+                        
+                        showError(errorMsg);
+                        
+                        // Re-enable the submit button
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = originalBtnText;
+                        
+                        // Focus on the appropriate field
+                        try {
+                            if (error.response?.data) {
+                                const errorData = error.response.data;
+                                let fieldToFocus = null;
+                                
+                                // Check which field had an error
+                                if (errorData.email || errorData.username) {
+                                    fieldToFocus = usernameInput;
+                                } else if (errorData.password) {
+                                    fieldToFocus = passwordInput;
+                                }
+                                
+                                if (fieldToFocus) {
+                                    fieldToFocus.focus();
+                                    fieldToFocus.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                }
+                            }
+                        } catch (focusError) {
+                            console.warn('Could not focus on error field:', focusError);
+                        }
+                    }
+                });
+            }
+            
+            function showError(message) {
+                errorMessage.textContent = message;
+                errorMessage.style.display = 'block';
+                setTimeout(() => {
+                    errorMessage.style.display = 'none';
+                }, 5000);
+            }
+        });
+    </script>
+</body>
+</html>

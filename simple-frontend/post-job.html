@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post a Job - TalentLink</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #333;
+        }
+        .form-group input[type="text"],
+        .form-group input[type="number"],
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        .form-group input[type="text"]:focus,
+        .form-group input[type="number"]:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #1976d2;
+            box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.2);
+        }
+        .btn-submit {
+            background-color: #1976d2;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .btn-submit:hover {
+            background-color: #1565c0;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container" style="display: flex; justify-content: space-between; align-items: center; padding: 1rem 0;">
+            <h1 style="margin: 0;"><a href="index.html" style="color: white; text-decoration: none;">TalentLink</a></h1>
+            <nav id="mainNav" style="display: flex; align-items: center; gap: 1.5rem;">
+                <a href="index.html" style="color: white; text-decoration: none;">Jobs</a>
+                
+                <!-- Login/Signup Buttons (Shown when not logged in) -->
+                <span id="authNav" style="display: none; gap: 1rem; align-items: center;">
+                    <a href="login.html" class="btn-text" style="color: white; text-decoration: none; padding: 0.5rem 1rem;">Login</a>
+                    <a href="signup.html" class="btn-outline" style="border: 1px solid white; color: white; text-decoration: none; padding: 0.5rem 1rem; border-radius: 4px;">Sign Up</a>
+                </span>
+                
+                <!-- User Menu (Shown when logged in) -->
+                <span id="userNav" style="display: none; gap: 1rem; align-items: center;">
+                    <a href="post-job.html" id="postJobBtn" class="btn-primary" style="background-color: #1976d2; color: white; text-decoration: none; padding: 0.5rem 1rem; border-radius: 4px; align-items: center;">
+                        <i class="material-icons" style="font-size: 1.1em; margin-right: 4px; vertical-align: middle;">post_add</i>
+                        <span>Post a Job</span>
+                    </a>
+                    <a href="#" id="myJobsBtn" class="btn-text" style="color: white; text-decoration: none; padding: 0.5rem 0;">My Jobs</a>
+                    <div class="user-avatar" id="userAvatar" style="width: 36px; height: 36px; border-radius: 50%; background-color: #1976d2; color: white; display: flex; align-items: center; justify-content: center; font-weight: 600; cursor: pointer; font-size: 0.9em;">
+                        <span id="userInitials">U</span>
+                    </div>
+                </span>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container" style="padding: 2rem 0;">
+        <div class="auth-form" style="max-width: 800px; margin: 0 auto;">
+            <h2 style="margin-bottom: 2rem; text-align: center;">Post a New Job</h2>
+            <form id="postJobForm">
+                <div class="form-group">
+                    <label for="jobTitle">Job Title *</label>
+                    <input type="text" id="jobTitle" required placeholder="e.g. Senior Software Engineer">
+                </div>
+                
+                <div class="form-group">
+                    <label for="companyName">Company Name *</label>
+                    <input type="text" id="companyName" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="jobType">Job Type *</label>
+                    <select id="jobType" required>
+                        <option value="">Select job type</option>
+                        <option value="full-time">Full-time</option>
+                        <option value="part-time">Part-time</option>
+                        <option value="contract">Contract</option>
+                        <option value="internship">Internship</option>
+                        <option value="remote">Remote</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="location">Location *</label>
+                    <input type="text" id="location" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="salary">Salary Range</label>
+                    <input type="text" id="salary" placeholder="e.g. $80,000 - $120,000 per year">
+                </div>
+                
+                <div class="form-group">
+                    <label for="applicationEmail">Application Email *</label>
+                    <input type="email" id="applicationEmail" required placeholder="email@example.com">
+                </div>
+                
+                <div style="margin-top: 2rem; text-align: center;">
+                    <button type="submit" class="btn-submit">
+                        <i class="material-icons" style="vertical-align: middle; margin-right: 8px;">post_add</i>
+                        Post Job
+                    </button>
+                </div>
+                <button type="button" id="saveDraftBtn" class="btn-secondary" style="margin-left: 10px;">Save as Draft</button>
+            </form>
+            <div id="postJobMessage" class="message"></div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 TalentLink. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Load scripts at the end of the body -->
+    <script src="js/auth.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        // Wait for the DOM to be fully loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // First update the UI based on user role
+            updateUIBasedOnRole();
+            
+            // Then set up the form if we're on the post-job page
+            const postJobForm = document.getElementById('postJobForm');
+            if (postJobForm) {
+                postJobForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    // Handle job posting logic here
+                    alert('Job posted successfully!');
+                    window.location.href = 'index.html';
+                });
+            }
+        });
+    </script>
+</body>
+</html>

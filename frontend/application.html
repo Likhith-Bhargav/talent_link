@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apply for Job - TalentLink</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/application.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <a href="index.html" class="logo">TalentLink</a>
+            <div class="nav-links" id="navLinks">
+                <a href="index.html">Home</a>
+                <a href="jobs.html">Jobs</a>
+                <a href="#companies">Companies</a>
+                <a href="my-applications.html" id="applicationsLink">Your Applications</a>
+                <!-- Post a Job Button - Only visible to employers -->
+                <a href="post-job.html" class="btn btn-primary" id="postJobBtn" style="display: none; margin-left: 10px;">
+                    <i class="material-icons" style="font-size: 16px; vertical-align: middle; margin-right: 4px;">add</i>
+                    Post a Job
+                </a>
+                <!-- Auth State Container - Will be managed by auth.js -->
+                <div id="authState">
+                    <!-- Login/Signup Buttons (Shown when not logged in) -->
+                    <div class="auth-buttons" id="authButtons">
+                        <a href="login.html" class="btn btn-outline" id="loginLink">Login</a>
+                        <a href="signup.html" class="btn btn-primary" id="registerLink">Sign Up</a>
+                    </div>
+                    <!-- User Menu (Shown when logged in) -->
+                    <div class="user-menu" id="userMenu" style="display: none;">
+                        <div class="user-dropdown">
+                            <button class="user-avatar" id="userAvatar">
+                                <span class="material-icons">account_circle</span>
+                                <span id="userInitials" class="user-initials"></span>
+                            </button>
+                            <div class="dropdown-content" id="dropdownMenu">
+                                <div class="user-info">
+                                    <div id="userName" class="user-name">Loading...</div>
+                                    <div id="userEmail" class="user-email"></div>
+                                </div>
+                                <div class="dropdown-divider"></div>
+                                <a href="profile.html"><i class="material-icons">person</i> My Profile</a>
+                                <a href="my-jobs.html"><i class="material-icons">work</i> My Jobs</a>
+                                <a href="settings.html"><i class="material-icons">settings</i> Settings</a>
+                                <div class="dropdown-divider"></div>
+                                <a href="#" id="logoutBtn"><i class="material-icons">logout</i> Logout</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button class="hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false" aria-controls="navLinks">
+                <span class="material-icons">menu</span>
+            </button>
+        </div>
+    </nav>
+
+    <main class="container" style="margin-top: 6rem;">
+        <div id="applicationContainer" class="application-container">
+            <div class="application-header">
+                <h1>Job Application</h1>
+                <p id="jobTitle" class="text-muted">Loading job details...</p>
+            </div>
+            
+            <!-- Auto-fill with Resume Section -->
+            <div class="auto-fill-section">
+                <div class="auto-fill-header">
+                    <i class="material-icons">auto_fix_high</i>
+                    <h3>Auto-fill with Resume</h3>
+                </div>
+                <p class="auto-fill-description">
+                    Upload your resume to automatically extract and fill in your information. You can review and edit the extracted data before submitting.
+                </p>
+                <div class="auto-fill-actions">
+                    <button type="button" id="autoFillBtn" class="btn btn-primary">
+                        <i class="material-icons">upload_file</i>
+                        Upload Resume & Auto-fill
+                    </button>
+                    <input type="file" id="resumeForAutoFill" accept=".pdf,.doc,.docx" style="display: none;">
+                </div>
+                <div id="autoFillStatus" class="auto-fill-status" style="display: none;">
+                    <div class="status-message">
+                        <i class="material-icons">hourglass_empty</i>
+                        <span id="statusText">Processing resume...</span>
+                    </div>
+                </div>
+            </div>
+            
+            <form id="applicationForm">
+                <div class="form-group">
+                    <label for="fullName" class="required">Full Name</label>
+                    <input type="text" id="fullName" class="form-control" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email" class="required">Email</label>
+                    <input type="email" id="email" class="form-control" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <input type="tel" id="phone" class="form-control">
+                </div>
+                
+                <div class="form-group">
+                    <label for="resume" class="required">Resume (PDF or DOCX, max 5MB)</label>
+                    <input type="file" id="resume" class="form-control" accept=".pdf,.doc,.docx" required>
+                    <small class="text-muted">Accepted formats: PDF, DOC, DOCX (max 5MB)</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="coverLetter">Cover Letter</label>
+                    <textarea id="coverLetter" class="form-control" placeholder="Tell us why you'd be a great fit for this position..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="skills">Skills (Optional)</label>
+                    <textarea id="skills" class="form-control" placeholder="List your relevant skills for this position (e.g., JavaScript, React, Python, Project Management, etc.)" rows="3"></textarea>
+                    <small class="text-muted">Separate skills with commas or list them on separate lines</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="linkedin">LinkedIn Profile (Optional)</label>
+                    <input type="url" id="linkedin" class="form-control" placeholder="https://linkedin.com/in/yourprofile">
+                </div>
+                
+                <div class="form-group">
+                    <label for="portfolio">Portfolio/Website (Optional)</label>
+                    <input type="url" id="portfolio" class="form-control" placeholder="https://yourportfolio.com">
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn-submit">
+                        <i class="material-icons">send</i> Submit Application
+                    </button>
+                    <a href="jobs.html" class="btn btn-outline" style="margin-left: 1rem; text-decoration: none;">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+    // Mobile menu toggle
+    document.addEventListener('DOMContentLoaded', function() {
+        const hamburger = document.getElementById('hamburger');
+        const navLinks = document.getElementById('navLinks');
+        
+        if (hamburger && navLinks) {
+            hamburger.addEventListener('click', function() {
+                navLinks.classList.toggle('active');
+                this.setAttribute('aria-expanded', this.getAttribute('aria-expanded') === 'true' ? 'false' : 'true');
+            });
+        }
+        
+        // Close mobile menu when clicking on a nav link
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth <= 768) {
+                    navLinks.classList.remove('active');
+                    hamburger.setAttribute('aria-expanded', 'false');
+                }
+            });
+        });
+    });
+    </script>
+    <script>
+    document.addEventListener('DOMContentLoaded', async function() {
+        // Update applications link text based on user type
+        function updateApplicationsLink() {
+            const applicationsLink = document.getElementById('applicationsLink');
+            if (applicationsLink && window.TalentLink?.auth) {
+                const isEmployer = window.TalentLink.auth.isEmployer();
+                applicationsLink.textContent = isEmployer ? 'Applications' : 'My Applications';
+            }
+        }
+        
+        // Update on auth state change
+        window.addEventListener('authStateChange', updateApplicationsLink);
+        
+        // Initial update
+        setTimeout(updateApplicationsLink, 100);
+        
+        // Auto-fill functionality
+        const autoFillBtn = document.getElementById('autoFillBtn');
+        const resumeForAutoFill = document.getElementById('resumeForAutoFill');
+        const autoFillStatus = document.getElementById('autoFillStatus');
+        const statusText = document.getElementById('statusText');
+        
+        // Handle auto-fill button click
+        if (autoFillBtn) {
+            autoFillBtn.addEventListener('click', () => {
+                resumeForAutoFill.click();
+            });
+        }
+        
+        // Handle resume file selection for auto-fill
+        if (resumeForAutoFill) {
+            resumeForAutoFill.addEventListener('change', async (event) => {
+                const file = event.target.files[0];
+                if (!file) return;
+                
+                // Show processing status
+                showAutoFillStatus('Processing resume...', 'processing');
+                
+                try {
+                    // Call the resume parsing API using the API service
+                    const data = await window.TalentLink.api.jobs.parseResume(file);
+                    
+                    if (data) {
+                        // Auto-fill the form fields with the parsed data
+                        fillFormWithResumeData(data);
+                        
+                        // Set the resume file in the main resume field
+                        const mainResumeField = document.getElementById('resume');
+                        if (mainResumeField) {
+                            // Create a new FileList-like object
+                            const dataTransfer = new DataTransfer();
+                            dataTransfer.items.add(file);
+                            mainResumeField.files = dataTransfer.files;
+                        }
+                        
+                        showAutoFillStatus('Resume processed successfully! Form fields have been auto-filled.', 'success');
+                        
+                        // Show success message for a few seconds
+                        setTimeout(() => {
+                            hideAutoFillStatus();
+                        }, 3000);
+                    } else {
+                        showAutoFillStatus('Failed to process resume. Please try again.', 'error');
+                    }
+                } catch (error) {
+                    console.error('Error processing resume:', error);
+                    let errorMessage = 'Failed to process resume. Please try again.';
+                    
+                    if (error.response && error.response.data) {
+                        if (error.response.data.detail) {
+                            errorMessage = error.response.data.detail;
+                        }
+                    } else if (error.message) {
+                        errorMessage = error.message;
+                    }
+                    
+                    showAutoFillStatus(errorMessage, 'error');
+                }
+            });
+        }
+        
+        // Function to show auto-fill status
+        function showAutoFillStatus(message, type = 'processing') {
+            if (autoFillStatus && statusText) {
+                statusText.textContent = message;
+                autoFillStatus.style.display = 'block';
+                
+                const statusMessage = autoFillStatus.querySelector('.status-message');
+                if (statusMessage) {
+                    statusMessage.className = `status-message ${type}`;
+                    
+                    const icon = statusMessage.querySelector('.material-icons');
+                    if (icon) {
+                        switch (type) {
+                            case 'success':
+                                icon.textContent = 'check_circle';
+                                break;
+                            case 'error':
+                                icon.textContent = 'error';
+                                break;
+                            default:
+                                icon.textContent = 'hourglass_empty';
+                        }
+                    }
+                }
+            }
+        }
+        
+        // Function to hide auto-fill status
+        function hideAutoFillStatus() {
+            if (autoFillStatus) {
+                autoFillStatus.style.display = 'none';
+            }
+        }
+        
+        // Function to fill form with resume data
+        function fillFormWithResumeData(data) {
+            console.log('Filling form with resume data:', data);
+            
+            // Fill name field
+            const nameField = document.getElementById('fullName');
+            if (nameField && (data.name || data.full_name)) {
+                nameField.value = data.name || data.full_name;
+            }
+            
+            // Fill email field
+            const emailField = document.getElementById('email');
+            if (emailField && data.email) {
+                emailField.value = data.email;
+            }
+            
+            // Fill phone field if exists
+            const phoneField = document.getElementById('phone');
+            if (phoneField) {
+                if (data.phone) {
+                    phoneField.value = data.phone;
+                } else if (data.contact_number) {
+                    phoneField.value = data.contact_number;
+                } else if (data.phone_number) {
+                    phoneField.value = data.phone_number;
+                }
+            }
+            
+            // Fill skills if exists
+            const skillsField = document.getElementById('skills');
+            if (skillsField && data.skills) {
+                if (Array.isArray(data.skills)) {
+                    skillsField.value = data.skills.join(', ');
+                } else if (typeof data.skills === 'string') {
+                    skillsField.value = data.skills;
+                } else if (typeof data.skills === 'object') {
+                    // Handle skills object if returned in that format
+                    const allSkills = [];
+                    for (const category in data.skills) {
+                        if (Array.isArray(data.skills[category])) {
+                            allSkills.push(...data.skills[category]);
+                        }
+                    }
+                    skillsField.value = allSkills.join(', ');
+                }
+            }
+            
+            // Fill education if exists
+            const educationField = document.getElementById('education');
+            if (educationField && data.education) {
+                if (Array.isArray(data.education)) {
+                    // Use the most recent education entry
+                    const latestEdu = data.education[0];
+                    let eduText = '';
+                    if (latestEdu.degree) eduText += `${latestEdu.degree} `;
+                    if (latestEdu.field_of_study) eduText += `in ${latestEdu.field_of_study} `;
+                    if (latestEdu.institution) eduText += `from ${latestEdu.institution}`;
+                    educationField.value = eduText.trim();
+                }
+            }
+            
+            // Fill experience if exists
+            const experienceField = document.getElementById('experience');
+            if (experienceField && data.experience) {
+                if (Array.isArray(data.experience) && data.experience.length > 0) {
+                    // Use the most recent experience entry
+                    const latestExp = data.experience[0];
+                    let expText = '';
+                    if (latestExp.title) expText += `${latestExp.title} `;
+                    if (latestExp.company) expText += `at ${latestExp.company}`;
+                    experienceField.value = expText.trim();
+                }
+            }
+        }
+        
+        // Get job ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const jobId = urlParams.get('jobId');
+        
+        if (!jobId) {
+            document.getElementById('applicationContainer').innerHTML = `
+                <div class="error-message">
+                    <i class="material-icons">error_outline</i>
+                    <p>No job specified. Please apply from a job listing.</p>
+                    <a href="jobs.html" class="btn btn-primary">Browse Jobs</a>
+                </div>
+            `;
+            return;
+        }
+
+        // Get user data
+        let user = null;
+        try {
+            const userData = localStorage.getItem('user');
+            if (userData) {
+                user = JSON.parse(userData);
+                // Pre-fill user data
+                if (user) {
+                    document.getElementById('fullName').value = user.name || '';
+                    document.getElementById('email').value = user.email || '';
+                    document.getElementById('phone').value = user.phone || '';
+                }
+            }
+        } catch (e) {
+            console.error('Error parsing user data:', e);
+        }
+
+        // Load job details
+        try {
+            const job = await window.TalentLink.api.jobs.getById(jobId);
+            document.getElementById('jobTitle').textContent = job.title;
+            document.title = `Apply for ${job.title} - TalentLink`;
+        } catch (error) {
+            console.error('Error loading job details:', error);
+            document.getElementById('jobTitle').innerHTML = `
+                <span style="color: #e74c3c;">Error loading job details. Please try again later.</span>
+            `;
+        }
+
+        // Define the submit handler
+        const handleSubmit = async (e) => {
+            e.preventDefault();
+            
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalBtnText = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="material-icons">hourglass_empty</i> Submitting...';
+
+            try {
+                const formData = new FormData();
+                formData.append('full_name', document.getElementById('fullName').value.trim());
+                formData.append('email', document.getElementById('email').value.trim());
+                formData.append('phone', document.getElementById('phone').value.trim() || '');
+                formData.append('cover_letter', document.getElementById('coverLetter').value.trim() || '');
+                formData.append('skills', document.getElementById('skills').value.trim() || '');
+                formData.append('linkedin_url', document.getElementById('linkedin').value.trim() || '');
+                formData.append('portfolio_url', document.getElementById('portfolio').value.trim() || '');
+                
+                const resumeFile = document.getElementById('resume').files[0];
+                if (!resumeFile) {
+                    throw new Error('Please upload your resume');
+                }
+                
+                // Check file size (5MB max)
+                if (resumeFile.size > 5 * 1024 * 1024) {
+                    throw new Error('Resume file size should be less than 5MB');
+                }
+                
+                // Check file type
+                const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+                if (!allowedTypes.includes(resumeFile.type)) {
+                    throw new Error('Please upload a valid file (PDF, DOC, or DOCX)');
+                }
+                
+                formData.append('resume', resumeFile);
+
+                // Show loading state
+                const applicationContainer = document.getElementById('applicationContainer');
+                const originalContent = applicationContainer.innerHTML;
+                
+                try {
+                    // Submit application
+                    const response = await window.TalentLink.api.request('POST', `/api/job-postings/${jobId}/apply/`, formData, {
+                        headers: {
+                            'Accept': 'application/json'
+                        },
+                        stringify: false // Don't stringify FormData
+                    });
+                    
+                    // Clear all caches and notify other tabs
+                    if (window.TalentLink && window.TalentLink.jobs && typeof window.TalentLink.jobs.clearJobCaches === 'function') {
+                        window.TalentLink.jobs.clearJobCaches();
+                    } else if (window.TalentLink && window.TalentLink.api) {
+                        // Fallback to direct cache clearing if jobs module isn't available
+                        const clearCache = (prefix) => {
+                            const keysToRemove = [];
+                            for (let i = 0; i < localStorage.length; i++) {
+                                const key = localStorage.key(i);
+                                if (key && key.startsWith(prefix)) {
+                                    keysToRemove.push(key);
+                                }
+                            }
+                            keysToRemove.forEach(key => localStorage.removeItem(key));
+                        };
+                        
+                        clearCache('jobs_');
+                        clearCache('job_');
+                        clearCache('applications_');
+                        
+                        // Notify other tabs that data has been updated
+                        localStorage.setItem('jobListingsUpdated', Date.now().toString());
+                        localStorage.setItem('applicationsUpdated', Date.now().toString());
+                    }
+                    
+                    // Show success message
+                    applicationContainer.innerHTML = `
+                        <div class="success-message" style="text-align: center; padding: 2rem; background: #f8f9fa; border-radius: 8px; margin-top: 2rem;">
+                            <i class="material-icons" style="font-size: 4rem; color: #28a745; margin-bottom: 1rem;">check_circle</i>
+                            <h2 style="color: #28a745; margin-bottom: 1rem;">Application Submitted Successfully!</h2>
+                            <p style="margin-bottom: 1.5rem; color: #495057;">Thank you for applying. We've received your application for "${document.getElementById('jobTitle').textContent}".</p>
+                            <p style="margin-bottom: 1rem; color: #6c757d;">We'll review your application and get back to you soon.</p>
+                            <p style="margin-bottom: 2rem; color: #dc3545; font-size: 0.9rem;"><i class="material-icons" style="font-size: 1rem; vertical-align: middle;">info</i> Note: If you navigate back to job listings, you may need to refresh the page to see updated results.</p>
+                            <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+                                <a href="jobs.html" class="btn btn-primary" style="text-decoration: none; min-width: 200px; margin: 5px;">Browse More Jobs</a>
+                                <a href="my-applications.html" class="btn btn-outline" style="text-decoration: none; min-width: 200px; margin: 5px;">View My Applications</a>
+                            </div>
+                        </div>
+                    `;
+                } catch (error) {
+                    // Restore form on error
+                    applicationContainer.innerHTML = originalContent;
+                    
+                    // Re-attach the submit event listener
+                    document.getElementById('applicationForm').addEventListener('submit', handleSubmit);
+                    
+                    // Show error message
+                    let errorMessage = 'Failed to submit application. Please try again.';
+                    
+                    if (error.response) {
+                        const errorData = error.response.data || {};
+                        if (errorData.detail) {
+                            errorMessage = errorData.detail;
+                        } else if (errorData.non_field_errors) {
+                            errorMessage = Array.isArray(errorData.non_field_errors) 
+                                ? errorData.non_field_errors[0]
+                                : errorData.non_field_errors;
+                        } else if (typeof errorData === 'object') {
+                            // Get the first error message
+                            const firstError = Object.values(errorData)[0];
+                            if (Array.isArray(firstError)) {
+                                errorMessage = firstError[0];
+                            } else if (typeof firstError === 'string') {
+                                errorMessage = firstError;
+                            }
+                        }
+                    } else if (error.message) {
+                        errorMessage = error.message;
+                    }
+                    
+                    // Show error alert
+                    alert(errorMessage);
+                    console.error('Application error:', error);
+                    throw error; // Re-throw to be caught by outer catch
+                }
+            } catch (error) {
+                console.error('Error submitting application:', error);
+                
+                // Show error message
+                let errorMessage = 'Failed to submit application. Please try again.';
+                
+                if (error.response) {
+                    const errorData = error.response.data || {};
+                    if (errorData.detail) {
+                        errorMessage = errorData.detail;
+                    } else if (errorData.non_field_errors) {
+                        errorMessage = Array.isArray(errorData.non_field_errors) 
+                            ? errorData.non_field_errors[0]
+                            : errorData.non_field_errors;
+                    } else if (typeof errorData === 'object') {
+                        // Get the first error message
+                        const firstError = Object.values(errorData)[0];
+                        if (Array.isArray(firstError)) {
+                            errorMessage = firstError[0];
+                        } else if (typeof firstError === 'string') {
+                            errorMessage = firstError;
+                        }
+                    }
+                } else if (error.message) {
+                    errorMessage = error.message;
+                }
+                
+                // Show error alert
+                alert(errorMessage);
+                
+                // Reset button state
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnText;
+            }
+        };
+
+        // Attach the submit handler
+        const form = document.getElementById('applicationForm');
+        if (form) {
+            form.addEventListener('submit', handleSubmit);
+        }
+    });
+    </script>
+</body>
+</html>

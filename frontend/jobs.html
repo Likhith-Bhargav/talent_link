@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Job Openings - TalentLink</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <a href="index.html" class="logo">TalentLink</a>
+            <div class="nav-links" id="navLinks">
+                <a href="index.html">Home</a>
+                <a href="jobs.html" class="active">Jobs</a>
+                <a href="#companies">Companies</a>
+                <a href="my-applications.html" id="applicationsLink">Your Applications</a>
+                <!-- Post a Job Button - Only visible to employers -->
+                <a href="post-job.html" class="btn btn-primary" id="postJobBtn" style="display: none; margin-left: 10px;">
+                    <i class="material-icons" style="font-size: 16px; vertical-align: middle; margin-right: 4px;">add</i>
+                    Post a Job
+                </a>
+                <!-- Auth State Container - Will be managed by auth.js -->
+                <div id="authState">
+                    <!-- Login/Signup Buttons (Shown when not logged in) -->
+                    <div class="auth-buttons" id="authButtons">
+                        <a href="login.html" class="btn btn-outline" id="loginLink">Login</a>
+                        <a href="signup.html" class="btn btn-primary" id="registerLink">Sign Up</a>
+                    </div>
+                    <!-- User Menu (Shown when logged in) -->
+                    <div class="user-menu" id="userMenu" style="display: none;">
+                        <div class="user-dropdown">
+                            <button class="user-avatar" id="userAvatar">
+                                <span class="material-icons">account_circle</span>
+                                <span id="userInitials" class="user-initials"></span>
+                            </button>
+                            <div class="dropdown-content" id="dropdownMenu">
+                                <div class="user-info">
+                                    <div id="userName" class="user-name">Loading...</div>
+                                    <div id="userEmail" class="user-email"></div>
+                                </div>
+                                <div class="dropdown-divider"></div>
+                                <a href="profile.html"><i class="material-icons">person</i> My Profile</a>
+                                <a href="my-jobs.html"><i class="material-icons">work</i> My Jobs</a>
+                                <a href="settings.html"><i class="material-icons">settings</i> Settings</a>
+                                <div class="dropdown-divider"></div>
+                                <a href="#" id="logoutBtn"><i class="material-icons">logout</i> Logout</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button class="hamburger" id="hamburger">
+                <span class="material-icons">menu</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Job Listings Section -->
+    <section id="jobListings" class="section">
+        <div class="container">
+            <div class="section-header">
+                <h1>All Job Openings</h1>
+                <div class="filters">
+                    <div class="filter-group">
+                        <label for="jobTypeFilter">Job Type:</label>
+                        <select id="jobTypeFilter" class="filter-select">
+                            <option value="">All Types</option>
+                            <option value="full_time">Full-time</option>
+                            <option value="part_time">Part-time</option>
+                            <option value="contract">Contract</option>
+                            <option value="internship">Internship</option>
+                            <option value="remote">Remote</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="experienceFilter">Experience:</label>
+                        <select id="experienceFilter" class="filter-select">
+                            <option value="">All Levels</option>
+                            <option value="Entry Level">Entry Level</option>
+                            <option value="Mid Level">Mid Level</option>
+                            <option value="Senior Level">Senior Level</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="jobList" class="job-list">
+                <!-- Jobs will be loaded here by JavaScript -->
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Loading jobs...</p>
+                </div>
+            </div>
+            
+            <div id="pagination" class="pagination">
+                <!-- Pagination will be added by JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-about">
+                    <h3>TalentLink</h3>
+                    <p>Connecting top talent with leading companies worldwide. Find your dream job or your next great hire today.</p>
+                </div>
+                <div class="footer-links">
+                    <h4>For Job Seekers</h4>
+                    <a href="#">Browse Jobs</a>
+                    <a href="#">Create Profile</a>
+                    <a href="#">Career Resources</a>
+                </div>
+                <div class="footer-links">
+                    <h4>For Employers</h4>
+                    <a href="#">Post a Job</a>
+                    <a href="#">Browse Candidates</a>
+                    <a href="#">Pricing</a>
+                </div>
+                <div class="footer-contact">
+                    <h4>Contact Us</h4>
+                    <p>Email: info@talentlink.com</p>
+                    <p>Phone: (123) 456-7890</p>
+                    <div class="social-links">
+                        <a href="#" aria-label="Facebook">FB</a>
+                        <a href="#" aria-label="Twitter">TW</a>
+                        <a href="#" aria-label="LinkedIn">IN</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 TalentLink. All rights reserved.</p>
+                <div class="legal-links">
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                    <a href="#">Cookie Policy</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script type="module">
+        // Import the Jobs class
+        import { Jobs } from './js/jobs.js';
+        
+        // Wait for DOM to be fully loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize the Jobs module
+            const jobsModule = new Jobs();
+            
+            // Make it available globally for debugging
+            window.TalentLink = window.TalentLink || {};
+            window.TalentLink.jobs = jobsModule;
+
+            // Listen for storage events to update job listings when changes occur in other tabs
+            if (typeof(Storage) !== 'undefined') {
+                window.addEventListener('storage', function(event) {
+                    if (event.key === 'jobListingsUpdated') {
+                        console.log('[Jobs] Job listings updated in another tab, refreshing...');
+                        jobsModule.loadJobs();
+                    }
+                });
+            }
+
+            // Also listen for page visibility changes to refresh data when user returns to the tab
+            document.addEventListener('visibilitychange', function() {
+                if (!document.hidden) {
+                    console.log('[Jobs] Page became visible, refreshing job listings...');
+                    jobsModule.loadJobs();
+                }
+            });
+
+            // Check if user is logged in and update UI
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            if (user && user.token) {
+                // Update UI for logged-in user
+                const authButtons = document.getElementById('authButtons');
+                const userMenu = document.getElementById('userMenu');
+                const userName = document.getElementById('userName');
+                const userEmail = document.getElementById('userEmail');
+                const userInitials = document.getElementById('userInitials');
+                
+                if (authButtons) authButtons.style.display = 'none';
+                if (userMenu) userMenu.style.display = 'block';
+                
+                // Set user info
+                if (userName) userName.textContent = user.name || 'User';
+                if (userEmail) userEmail.textContent = user.email || '';
+                
+                // Set user initials
+                if (userInitials) {
+                    const nameParts = (user.name || '').split(' ');
+                    const initials = nameParts.length > 1 
+                        ? `${nameParts[0][0]}${nameParts[1][0]}`
+                        : nameParts[0] ? nameParts[0][0] : 'U';
+                    userInitials.textContent = initials.toUpperCase();
+                }
+                
+                // Show/hide post job button based on user type
+                const postJobBtn = document.getElementById('postJobBtn');
+                if (postJobBtn) {
+                    postJobBtn.style.display = 
+                        (user.user_type === 'employer' || user.role === 'employer') 
+                            ? 'inline-flex' 
+                            : 'none';
+                }
+                
+                // Update applications link text based on user type
+                const applicationsLink = document.getElementById('applicationsLink');
+                if (applicationsLink) {
+                    const isEmployer = (user.user_type === 'employer' || user.role === 'employer');
+                    applicationsLink.textContent = isEmployer ? 'Applications' : 'My Applications';
+                }
+            }
+            
+            // Update applications link on auth state change
+            window.addEventListener('authStateChange', function() {
+                const applicationsLink = document.getElementById('applicationsLink');
+                if (applicationsLink && window.TalentLink?.auth) {
+                    const isEmployer = window.TalentLink.auth.isEmployer();
+                    applicationsLink.textContent = isEmployer ? 'Applications' : 'My Applications';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

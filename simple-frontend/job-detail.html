@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Details - TalentLink</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .job-detail-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .job-header {
+            border-bottom: 1px solid #eee;
+            padding-bottom: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .job-title {
+            font-size: 2rem;
+            color: #1976d2;
+            margin-bottom: 0.5rem;
+        }
+        
+        .job-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            margin: 1rem 0;
+            color: #555;
+        }
+        
+        .job-meta span {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .job-actions {
+            display: flex;
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        
+        .job-section {
+            margin: 2rem 0;
+        }
+        
+        .job-section h3 {
+            color: #333;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .requirements-list, .benefits-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        
+        .requirements-list li, .benefits-list li {
+            padding: 0.5rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+        
+        .requirements-list li::before {
+            content: '•';
+            color: #1976d2;
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+        
+        .benefits-list li::before {
+            content: '✓';
+            color: #2e7d32;
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+        
+        .application-form {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            display: none;
+        }
+        
+        .application-form h3 {
+            margin-top: 0;
+            margin-bottom: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1><a href="index.html" style="color: white; text-decoration: none;">TalentLink</a></h1>
+            <nav id="mainNav">
+                <a href="index.html">Jobs</a>
+                <span id="authNav">
+                    <a href="login.html">Login</a>
+                    <a href="signup.html">Sign Up</a>
+                </span>
+                <span id="userNav" style="display: none;">
+                    <a href="post-job.html" id="postJobBtn">Post a Job</a>
+                    <a href="#" id="myJobsBtn">My Jobs</a>
+                    <a href="#" id="profileLink">Profile</a>
+                    <a href="#" id="logoutBtn">Logout</a>
+                </span>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="job-detail-container">
+            <div class="job-header">
+                <h1 class="job-title" id="jobTitle">Job Title</h1>
+                <p class="job-company" id="companyName">Company Name</p>
+                <div class="job-meta">
+                    <span><i class="material-icons">work</i> <span id="jobType">Full-time</span></span>
+                    <span><i class="material-icons">location_on</i> <span id="jobLocation">Remote</span></span>
+                    <span><i class="material-icons">attach_money</i> <span id="jobSalary">$80,000 - $100,000</span></span>
+                    <span><i class="material-icons">schedule</i> <span id="postedDate">Posted 2 days ago</span></span>
+                </div>
+            </div>
+            
+            <div class="job-actions">
+                <button id="applyBtn" class="btn-primary">Apply Now</button>
+                <button id="saveJobBtn" class="btn-secondary">Save Job</button>
+            </div>
+            
+            <div class="job-section">
+                <h3>Job Description</h3>
+                <div id="jobDescription"></div>
+            </div>
+            
+            <div class="job-section">
+                <h3>Requirements</h3>
+                <ul class="requirements-list" id="requirementsList"></ul>
+            </div>
+            
+            <div class="job-section">
+                <h3>Benefits</h3>
+                <ul class="benefits-list" id="benefitsList"></ul>
+            </div>
+            
+            <div class="application-form" id="applicationForm">
+                <h3>Apply for this position</h3>
+                <form id="jobApplicationForm">
+                    <div class="form-group">
+                        <label for="applicantName">Full Name *</label>
+                        <input type="text" id="applicantName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="applicantEmail">Email *</label>
+                        <input type="email" id="applicantEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="applicantPhone">Phone Number</label>
+                        <input type="tel" id="applicantPhone">
+                    </div>
+                    <div class="form-group">
+                        <label for="applicantResume">Resume/CV *</label>
+                        <input type="file" id="applicantResume" accept=".pdf,.doc,.docx" required>
+                        <small>Accepted formats: PDF, DOC, DOCX (Max: 5MB)</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="coverLetter">Cover Letter (optional)</label>
+                        <textarea id="coverLetter" rows="4" placeholder="Tell us why you're a good fit for this position..."></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">Submit Application</button>
+                        <button type="button" id="cancelApplyBtn" class="btn-secondary">Cancel</button>
+                    </div>
+                </form>
+                <div id="applicationMessage" class="message"></div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 TalentLink. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="js/job-detail.js"></script>
+</body>
+</html>
