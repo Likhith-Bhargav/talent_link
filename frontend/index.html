@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/companies.css">
+    <link rel="stylesheet" href="css/responsive.css">
 </head>
 <body>
     <!-- Navigation -->
@@ -102,40 +104,48 @@
         </div>
     </header>
 
-    <!-- Job Listings Section -->
-    <section id="jobListings" class="section">
+    <!-- Featured Companies Section -->
+    <section id="featuredCompanies" class="section">
         <div class="container">
             <div class="section-header">
-                <h2>Latest Job Openings</h2>
-                <div class="filters">
+                <h2>Featured Companies</h2>
+                <p>Discover top companies hiring on TalentLink</p>
+                <div class="filters" style="margin-top: 1.5rem;">
                     <div class="filter-group">
-                        <label for="jobTypeFilter">Job Type:</label>
-                        <select id="jobTypeFilter" class="filter-select">
-                            <option value="">All Types</option>
-                            <option value="Full-time">Full-time</option>
-                            <option value="Part-time">Part-time</option>
-                            <option value="Contract">Contract</option>
-                            <option value="Internship">Internship</option>
-                            <option value="Remote">Remote</option>
+                        <label for="industryFilter">Industry:</label>
+                        <select id="industryFilter" class="filter-select">
+                            <option value="">All Industries</option>
+                            <option value="Technology">Technology</option>
+                            <option value="Finance">Finance</option>
+                            <option value="Healthcare">Healthcare</option>
+                            <option value="Education">Education</option>
+                            <option value="Retail">Retail</option>
+                            <option value="Manufacturing">Manufacturing</option>
+                            <option value="Other">Other</option>
                         </select>
                     </div>
                     <div class="filter-group">
-                        <label for="experienceFilter">Experience:</label>
-                        <select id="experienceFilter" class="filter-select">
-                            <option value="">All Levels</option>
-                            <option value="Entry Level">Entry Level</option>
-                            <option value="Mid Level">Mid Level</option>
-                            <option value="Senior Level">Senior Level</option>
+                        <label for="sizeFilter">Company Size:</label>
+                        <select id="sizeFilter" class="filter-select">
+                            <option value="">All Sizes</option>
+                            <option value="1-10">1-10 employees</option>
+                            <option value="11-50">11-50 employees</option>
+                            <option value="51-200">51-200 employees</option>
+                            <option value="201-500">201-500 employees</option>
+                            <option value="501-1000">501-1,000 employees</option>
+                            <option value="1001-5000">1,001-5,000 employees</option>
+                            <option value="5001-10000">5,001-10,000 employees</option>
+                            <option value="10001+">10,000+ employees</option>
                         </select>
                     </div>
                 </div>
             </div>
             
-            <div class="job-list">
-                <!-- Jobs will be loaded here by JavaScript -->
+            <div class="companies-list">
+                <!-- Companies will be loaded here by JavaScript -->
                 <div class="loading">
                     <div class="spinner"></div>
-                    <p>Loading jobs...</p>
+                    <p>Loading companies...</p>
                 </div>
             </div>
             
@@ -143,8 +153,8 @@
                 <!-- Pagination will be added by JavaScript -->
             </div>
             
-            <div class="view-all-jobs" style="text-align: center; margin-top: 2rem;">
-                <a href="jobs.html" class="btn btn-primary">View All Jobs</a>
+            <div class="view-all-companies" style="text-align: center; margin-top: 2rem;">
+                <a href="#" class="btn btn-primary" id="viewAllCompanies">View All Companies</a>
             </div>
         </div>
     </section>
@@ -270,16 +280,27 @@
     </button>
 
     <!-- Scripts -->
-    <script src="js/api.js"></script>
-    <script type="module" src="js/auth.js"></script>
-    <script type="module" src="js/main.js"></script>
-    <script type="module" src="js/jobs.js"></script>
+    <script src="js/api.js" type="module"></script>
+    <script src="js/auth.js" type="module"></script>
+    <script src="js/companies.js" type="module"></script>
+    <script src="js/jobs.js" type="module"></script>
+    <script src="js/main.js" type="module"></script>
     <script type="module">
-        // Import the Jobs class
+        // Import the Jobs and Companies classes
         import { Jobs } from './js/jobs.js';
+        import { Companies } from './js/companies.js';
         
-        // Initialize jobs module when the page loads
-        document.addEventListener('DOMContentLoaded', function() {
+        // Initialize modules when the page loads
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Wait for auth to be initialized
+            await window.TalentLink.auth.initialize();
+            
+            // Initialize the Companies module with auth state
+            const companiesModule = new Companies();
+            
+            // Make it available globally for debugging
+            window.companiesModule = companiesModule;
+            
             // Initialize the Jobs module
             const jobsModule = new Jobs();
             
@@ -355,14 +376,24 @@
                 if (applicationsLink && window.TalentLink?.auth) {
                     const isEmployer = window.TalentLink.auth.isEmployer();
                     applicationsLink.textContent = isEmployer ? 'Applications' : 'My Applications';
+                    applicationsLink.href = isEmployer ? 'all-applications.html' : 'my-applications.html';
+                }
+            }
+            
+            // Update UI when auth state changes
+            function handleAuthStateChange() {
+                updateApplicationsLink();
+                // Re-initialize companies to update UI based on auth state
+                if (window.companiesModule) {
+                    window.companiesModule.loadCompanies();
                 }
             }
             
             // Update on auth state change
-            window.addEventListener('authStateChange', updateApplicationsLink);
+            window.addEventListener('authStateChange', handleAuthStateChange);
             
             // Initial update
-            setTimeout(updateApplicationsLink, 100);
+            setTimeout(handleAuthStateChange, 100);
         });
     </script>
 </body>

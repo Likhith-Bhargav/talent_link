@@ -1,10 +1,11 @@
 from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.exceptions import PermissionDenied
+from rest_framework.exceptions import PermissionDenied, ValidationError
 from django.utils import timezone
 from django.db import models
-from ..models import JobPosting, Company
+from django.db.models import Q
+from ..models import JobPosting, Company, RecruiterCompany
 from ..serializers import JobPostingSerializer
 
 class IsCompanyUser(permissions.BasePermission):
@@ -70,12 +71,21 @@ class JobPostingViewSet(viewsets.ModelViewSet):
         - Regular users see all active postings
         - Unauthenticated users see all active postings (handled by permissions)
         """
+        print("\n=== DEBUG: get_queryset ===")
+        print(f"Request query params: {self.request.query_params}")
+        
         queryset = JobPosting.objects.all()
         
         # Filter by company if company_id is provided
         company_id = self.request.query_params.get('company_id')
+        print(f"Company ID from URL: {company_id}")
+        
         if company_id is not None:
+            print(f"Filtering jobs by company_id: {company_id}")
             queryset = queryset.filter(company_id=company_id)
+            print(f"SQL Query: {str(queryset.query)}")
+        else:
+            print("No company_id filter applied")
         
         # For company/employer users, only show their company's postings
         if hasattr(self.request.user, 'user_type') and self.request.user.user_type in ['employer', 'company']:
@@ -141,80 +151,44 @@ class JobPostingViewSet(viewsets.ModelViewSet):
             raise PermissionDenied("You don't have permission to create job postings. Only employers can post jobs.")
 
         try:
-            # Print debug information
-            print("\n" + "="*50)
+            # Debug information
+            print(f"\n{'='*50}")
             print(f"DEBUG - User: {user.id} - {user.email}")
             print(f"DEBUG - User type: {getattr(user, 'user_type', 'not set')}")
             
-            from ..models import Company
-            from django.db import connection
+            # 1. First try to get companies through the recruiter_companies relationship
+            recruiter_companies = RecruiterCompany.objects.filter(user=user).select_related('company')
+            user_companies = [rc.company for rc in recruiter_companies]
+            print(f"DEBUG - Recruiter companies: {[c.id for c in user_companies]}")
             
-            # Debug: Print all companies and their users
-            all_companies = Company.objects.all()
-            print("\nDEBUG - All companies and their users:")
-            for c in all_companies:
-                users = list(c.users.all())
-                print(f"- {c.name} (ID: {c.id}): {[u.email for u in users]}")
-            
-            # Debug: Print all users and their companies
-            print("\nDEBUG - All users and their companies:")
-            from django.contrib.auth import get_user_model
-            User = get_user_model()
-            for u in User.objects.all():
-                companies = list(u.companies.all())
-                if companies:
-                    print(f"- {u.email} (ID: {u.id}): {[c.name for c in companies]}")
-            
-            # Debug: Print the raw SQL for the many-to-many relationship
-            print("\nDEBUG - Raw SQL for user.companies.all():")
-            print(str(user.companies.all().query))
-            
-            # Get companies through the many-to-many relationship
-            user_companies = list(user.companies.all())
-            print(f"\nDEBUG - User companies (direct): {[c.name for c in user_companies]}")
-            
-            # Try alternative way to get companies
-            companies_through_filter = list(Company.objects.filter(users=user))
-            print(f"DEBUG - Companies through filter: {[c.name for c in companies_through_filter]}")
-            
-            # If still no companies, try to find any company
-            all_companies_list = list(Company.objects.all())
-            if all_companies_list and not user_companies and not companies_through_filter:
-                print("\nWARNING: User has no companies associated, but companies exist in the system")
-                print("Using the first available company as a fallback")
-                company = all_companies_list[0]
+            if not user_companies:
+                # 2. Try the standard companies relationship
+                user_companies = list(user.companies.all())
+                print(f"DEBUG - Standard companies: {[c.id for c in user_companies]}")
                 
-                # Add user to the company
-                company.users.add(user)
-                company.save()
-                print(f"Added user {user.email} to company {company.name}")
-                
-                # Set the posted_by and company fields
-                serializer.save(
-                    posted_by=user,
-                    company=company
-                )
-                return
+                if not user_companies:
+                    # 3. Try the reverse relationship
+                    user_companies = list(Company.objects.filter(users=user))
+                    print(f"DEBUG - Reverse companies: {[c.id for c in user_companies]}")
             
-            # If we have companies through either method, use the first one
-            all_user_companies = list(set(user_companies + companies_through_filter))
-            
-            if not all_user_companies:
-                raise PermissionDenied(
+            if not user_companies:
+                raise ValidationError(
                     "You are not associated with any company. "
-                    "Please contact an administrator to be added to a company. "
-                    f"User ID: {user.id}, Email: {user.email}"
+                    "Please contact an administrator to be added to a company."
                 )
             
-            # Use the first company found
-            company = all_user_companies[0]
-            print(f"\nDEBUG - Using company: {company.id} - {company.name}")
+            # Get the first company (in a real app, you might want to let the user choose)
+            company = user_companies[0]
+            print(f"DEBUG - Using company: {company.id} - {company.name}")
             
             # Set the posted_by and company fields
             serializer.save(
                 posted_by=user,
                 company=company
             )
+            
+            print(f"DEBUG - Successfully created job with company: {company.id}")
+            print("="*50 + "\n")
             
         except Exception as e:
             import traceback
@@ -223,7 +197,9 @@ class JobPostingViewSet(viewsets.ModelViewSet):
             print("ERROR DETAILS:")
             print(error_msg)
             print("="*50 + "\n")
-            raise PermissionDenied(f"Error creating job posting: {str(e)}")
+            if isinstance(e, ValidationError):
+                raise e
+            raise ValidationError("An error occurred while creating the job posting. Please try again.")
 
     @action(detail=True, methods=['post'])
     def toggle_active(self, request, pk=None):
