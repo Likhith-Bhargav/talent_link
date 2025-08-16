@@ -116,16 +116,31 @@
     </style>
 </head>
 <body>
-    <header class="header">
+    <!-- Navigation -->
+    <nav class="navbar">
         <div class="container">
             <a href="index.html" class="logo">TalentLink</a>
-            <nav class="main-nav">
+            <div class="nav-links" id="navLinks">
                 <a href="index.html">Home</a>
-                <a href="login.html">Login</a>
-                <a href="signup.html" class="active">Sign Up</a>
-            </nav>
+                <a href="jobs.html">Jobs</a>
+                <a href="#companies">Companies</a>
+                <a href="my-applications.html" id="applicationsLink">Your Applications</a>
+                <!-- Post a Job Button - Only visible to employers -->
+                <a href="post-job.html" class="btn btn-primary" id="postJobBtn" style="display: none; margin-left: 10px;">
+                    <i class="material-icons" style="font-size: 16px; vertical-align: middle; margin-right: 4px;">add</i>
+                    Post a Job
+                </a>
+                <!-- Auth State Container - Will be managed by auth.js -->
+                <div id="authState">
+                    <!-- Login/Signup Buttons (Shown when not logged in) -->
+                    <div class="auth-buttons" id="authButtons">
+                        <a href="login.html" class="btn btn-outline" id="loginLink">Login</a>
+                        <a href="signup.html" class="btn btn-primary" id="signupLink">Sign Up</a>
+                    </div>
+                </div>
+            </div>
         </div>
-    </header>
+    </nav>
 
     <main class="container auth-container">
         <div class="auth-form">
@@ -155,21 +170,8 @@
                     <label for="password2">Confirm Password</label>
                     <input type="password" id="password2" name="password2" required minlength="8">
                 </div>
-                <div class="form-group">
-                    <label>I am a</label>
-                    <div class="radio-group">
-                        <label class="radio-label">
-                            <input type="radio" name="user_type" value="candidate" checked>
-                            <span class="radio-custom"></span>
-                            Job Seeker
-                        </label>
-                        <label class="radio-label">
-                            <input type="radio" name="user_type" value="employer">
-                            <span class="radio-custom"></span>
-                            Employer/Recruiter
-                        </label>
-                    </div>
-                </div>
+                <!-- User type is set to candidate by default -->
+                <input type="hidden" name="user_type" value="candidate">
                 <button type="submit" class="btn-primary">Sign Up</button>
             </form>
             <p class="auth-footer">Already have an account? <a href="login.html">Login here</a></p>

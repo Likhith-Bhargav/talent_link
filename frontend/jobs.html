@@ -7,6 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/jobs.css">
 </head>
 <body>
     <!-- Navigation -->
@@ -19,8 +20,8 @@
                 <a href="#companies">Companies</a>
                 <a href="my-applications.html" id="applicationsLink">Your Applications</a>
                 <!-- Post a Job Button - Only visible to employers -->
-                <a href="post-job.html" class="btn btn-primary" id="postJobBtn" style="display: none; margin-left: 10px;">
-                    <i class="material-icons" style="font-size: 16px; vertical-align: middle; margin-right: 4px;">add</i>
+                <a href="post-job.html" class="btn btn-primary" id="postJobBtn">
+                    <i class="material-icons">add</i>
                     Post a Job
                 </a>
                 <!-- Auth State Container - Will be managed by auth.js -->
@@ -31,7 +32,7 @@
                         <a href="signup.html" class="btn btn-primary" id="registerLink">Sign Up</a>
                     </div>
                     <!-- User Menu (Shown when logged in) -->
-                    <div class="user-menu" id="userMenu" style="display: none;">
+                    <div class="user-menu" id="userMenu">
                         <div class="user-dropdown">
                             <button class="user-avatar" id="userAvatar">
                                 <span class="material-icons">account_circle</span>

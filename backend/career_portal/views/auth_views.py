@@ -122,6 +122,7 @@ class LoginView(APIView):
                     'first_name': user.first_name,
                     'last_name': user.last_name,
                     'user_type': getattr(user, 'user_type', 'candidate'),
+                    'is_superuser': user.is_superuser,
                 }
                 
                 # Create response

@@ -27,10 +27,30 @@ class UserSerializer(serializers.ModelSerializer):
         return getattr(obj, 'user_type', 'candidate') in ['candidate', 'job_seeker']
 
 class CompanySerializer(serializers.ModelSerializer):
+    logo_url = serializers.SerializerMethodField(read_only=True)
+    logo = serializers.ImageField(required=False, allow_null=True)
+    
     class Meta:
         model = Company
-        fields = '__all__'
-        read_only_fields = ['created_at', 'updated_at']
+        fields = ['id', 'name', 'description', 'website', 'logo', 'logo_url', 'industry', 
+                 'company_size', 'headquarters', 'founded_year', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'logo_url']
+    
+    def get_logo_url(self, obj):
+        if obj.logo:
+            request = self.context.get('request')
+            if request is not None:
+                return request.build_absolute_uri(obj.logo.url)
+            return obj.logo.url
+        return None
+    
+    def create(self, validated_data):
+        logo = validated_data.pop('logo', None)
+        company = Company.objects.create(**validated_data)
+        if logo:
+            company.logo = logo
+            company.save()
+        return company
 
 class JobPostingSerializer(serializers.ModelSerializer):
     company_name = serializers.CharField(source='company.name', read_only=True)
