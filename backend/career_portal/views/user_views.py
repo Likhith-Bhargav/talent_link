@@ -27,6 +27,7 @@ class CurrentUserView(APIView):
             'user_type': getattr(user, 'user_type', 'candidate'),
             'is_employer': getattr(user, 'user_type', '') == 'employer',
             'is_candidate': getattr(user, 'user_type', 'candidate') in ['candidate', 'job_seeker'],
+            'is_superuser': user.is_superuser,
         })
 
 

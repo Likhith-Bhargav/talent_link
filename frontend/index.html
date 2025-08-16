@@ -19,10 +19,16 @@
                 <a href="#companies">Companies</a>
                 <a href="my-applications.html" id="applicationsLink">Your Applications</a>
                 <!-- Post a Job Button - Only visible to employers -->
+                <!-- Post a Job Button - Only visible to employers -->
                 <a href="post-job.html" class="btn btn-primary" id="postJobBtn" style="display: none; margin-left: 10px;">
                     <i class="material-icons" style="font-size: 16px; vertical-align: middle; margin-right: 4px;">add</i>
                     Post a Job
                 </a>
+                <!-- Onboard Company Button - Only visible to superusers -->
+                <button class="btn btn-secondary" id="onboardCompanyBtn" style="display: none; margin-left: 10px;">
+                    <i class="material-icons" style="font-size: 16px; vertical-align: middle; margin-right: 4px;">business</i>
+                    Onboard Company
+                </button>
                 <!-- Auth State Container - Will be managed by auth.js -->
                 <div id="authState">
                     <!-- Login/Signup Buttons (Shown when not logged in) -->

@@ -1,4 +1,201 @@
-/* Navigation Bar Fixes */
+/* Application Page Styles */
+
+/* Main Container */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* Application Container */
+.application-container {
+    max-width: 800px;
+    margin: 6rem auto 3rem;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    padding: 2.5rem;
+}
+
+/* Application Header */
+.application-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #edf2f7;
+}
+
+.application-header h1 {
+    font-size: 2rem;
+    color: #1a202c;
+    margin-bottom: 0.5rem;
+}
+
+/* Auto-fill Section */
+.auto-fill-section {
+    background: #f8fafc;
+    border: 1px dashed #cbd5e0;
+    border-radius: 10px;
+    padding: 1.75rem;
+    margin-bottom: 2.5rem;
+    text-align: center;
+}
+
+.auto-fill-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.auto-fill-header i {
+    color: #4a6cf7;
+    font-size: 1.5rem;
+}
+
+.auto-fill-header h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    color: #2d3748;
+}
+
+.auto-fill-description {
+    color: #4a5568;
+    margin: 0 0 1.5rem 0;
+    line-height: 1.6;
+}
+
+.auto-fill-actions {
+    margin-bottom: 1.5rem;
+}
+
+/* Form Styles */
+.form-group {
+    margin-bottom: 1.75rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: #2d3748;
+}
+
+.form-group label.required::after {
+    content: " *";
+    color: #e53e3e;
+}
+
+.form-control {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    font-size: 1rem;
+    color: #4a5568;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #4a6cf7;
+    box-shadow: 0 0 0 3px rgba(74, 108, 247, 0.2);
+}
+
+textarea.form-control {
+    min-height: 120px;
+    resize: vertical;
+}
+
+.text-muted {
+    color: #a0aec0;
+    font-size: 0.875rem;
+    display: block;
+    margin-top: 0.5rem;
+}
+
+/* Auto-fill Status */
+.auto-fill-status {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    border-radius: 6px;
+    background-color: #f7fafc;
+    border: 1px solid #e2e8f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+}
+
+.status-message {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #4a5568;
+}
+
+.status-message i {
+    color: #4a6cf7;
+}
+
+/* Form Actions */
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 2.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #edf2f7;
+}
+
+.btn-submit {
+    background: linear-gradient(135deg, #4a6cf7 0%, #3b5bdb 100%);
+    color: white;
+    border: none;
+    padding: 0.875rem 2rem;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(74, 108, 247, 0.2);
+}
+
+.btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(74, 108, 247, 0.3);
+}
+
+.btn-submit:active {
+    transform: translateY(0);
+}
+
+.btn-outline {
+    background: none;
+    color: #4a6cf7;
+    border: 1.5px solid #4a6cf7;
+    padding: 0.9rem 2.5rem;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    margin-left: 1rem;
+}
+
+.btn-outline:hover {
+    background-color: #f8fafc;
+    transform: translateY(-2px);
+}
+
+/* Navigation Bar */
 .navbar {
     position: fixed;
     top: 0;
@@ -34,8 +231,24 @@
     padding: 5px;
 }
 
-/* Mobile Menu Styles */
+/* Responsive Adjustments */
 @media (max-width: 768px) {
+    .application-container {
+        margin: 5rem 1rem 2rem;
+        padding: 1.5rem;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .btn-outline {
+        margin-left: 0;
+        width: 100%;
+        text-align: center;
+    }
+    
     .hamburger {
         display: block;
     }
@@ -48,20 +261,18 @@
         background-color: white;
         flex-direction: column;
         padding: 20px;
-        box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         transform: translateY(-150%);
-        opacity: 0;
-        visibility: hidden;
-        z-index: 998;
-        gap: 15px;
+        transition: transform 0.3s ease;
     }
-
+    
     .nav-links.active {
         transform: translateY(0);
         opacity: 1;
         visibility: visible;
+        transition: all 0.3s ease;
     }
-
+    
     .nav-links a {
         width: 100%;
         padding: 10px 0;

@@ -7,33 +7,7 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
-    <style>
-    .btn-apply {
-      background-color: #4a6cf7;
-      color: #fff;
-      border: none;
-      padding: 1rem 2.5rem;
-      border-radius: 6px;
-      font-size: 1.15rem;
-      font-weight: 600;
-      box-shadow: 0 2px 8px rgba(74, 108, 247, 0.10);
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      transition: background 0.2s, box-shadow 0.2s, transform 0.1s;
-      margin: 1rem 0 0 0;
-    }
-    .btn-apply:hover, .btn-apply:focus {
-      background-color: #274bb6;
-      box-shadow: 0 4px 16px rgba(74, 108, 247, 0.18);
-      transform: translateY(-2px) scale(1.03);
-    }
-    .btn-apply .material-icons {
-      font-size: 1.3em;
-      vertical-align: middle;
-    }
-    </style>
+    <link rel="stylesheet" href="css/job-details.css">
 </head>
 <body>
     <!-- Navigation -->
@@ -46,8 +20,8 @@
                 <a href="#companies">Companies</a>
                 <a href="my-applications.html" id="applicationsLink">Your Applications</a>
                 <!-- Post a Job Button - Only visible to employers -->
-                <a href="post-job.html" class="btn btn-primary" id="postJobBtn" style="display: none; margin-left: 10px;">
-                    <i class="material-icons" style="font-size: 16px; vertical-align: middle; margin-right: 4px;">add</i>
+                <a href="post-job.html" class="btn btn-primary" id="postJobBtn">
+                    <i class="material-icons">add</i>
                     Post a Job
                 </a>
                 <!-- Auth State Container - Will be managed by auth.js -->
@@ -58,7 +32,7 @@
                         <a href="signup.html" class="btn btn-primary" id="registerLink">Sign Up</a>
                     </div>
                     <!-- User Menu (Shown when logged in) -->
-                    <div class="user-menu" id="userMenu" style="display: none;">
+                    <div class="user-menu" id="userMenu">
                         <div class="user-dropdown">
                             <button class="user-avatar" id="userAvatar">
                                 <span class="material-icons">account_circle</span>
@@ -237,7 +211,7 @@
             }
             jobDetailsDiv.innerHTML = `
                 <div class="job-details-header">
-                    <div class="company-logo" style="background-color: #4361ee; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 2rem; color: #fff;">
+                    <div class="company-logo">
                         ${job.company_name ? job.company_name.charAt(0).toUpperCase() : '?'}
                     </div>
                     <div class="job-details-header-text">

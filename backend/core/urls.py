@@ -19,7 +19,6 @@ urlpatterns = [
     # API Endpoints
     path('api/', include('career_portal.urls')),
     path('api/resume/', include('resume_parser.urls')),  # Resume parsing endpoints
-    path('api/auth/', include(('rest_framework.urls', 'rest_framework'), namespace='rest_framework')),  # For browsable API login/logout
     path('api/auth/', include('dj_rest_auth.urls')),    # For JWT authentication
     path('api/auth/registration/', include('dj_rest_auth.registration.urls')),
     

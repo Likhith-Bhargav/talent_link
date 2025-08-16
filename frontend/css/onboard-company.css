@@ -1,0 +1,148 @@
+/* onboard-company.css */
+
+/* Form elements */
+.form-input,
+.form-select,
+.form-textarea {
+  transition: all 0.2s ease-in-out;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+  border-color: transparent;
+  box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.5);
+  outline: none;
+}
+
+/* Buttons */
+.btn-primary {
+  background: linear-gradient(to right, #0ea5e9, #0284c7);
+  color: white;
+  font-weight: 500;
+  border-radius: 0.5rem;
+  padding: 0.625rem 1.5rem;
+  transition: all 0.2s;
+  transform: translateY(0);
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+}
+
+.btn-primary:hover {
+  background: linear-gradient(to right, #0284c7, #0369a1);
+  transform: translateY(-1px) scale(1.02);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.btn-primary:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.5);
+}
+
+.btn-secondary {
+  background: white;
+  color: #374151;
+  border: 1px solid #d1d5db;
+  font-weight: 500;
+  border-radius: 0.5rem;
+  padding: 0.625rem 1.5rem;
+  transition: all 0.2s;
+  cursor: pointer;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.btn-secondary:hover {
+  background-color: #f9fafb;
+  transform: translateY(-1px) scale(1.02);
+}
+
+.btn-secondary:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(209, 213, 219, 0.5);
+}
+
+/* Card styles */
+.card {
+  background: white;
+  border-radius: 1rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+}
+
+/* Header styles */
+.company-header {
+  background: linear-gradient(to right, #0ea5e9, #0284c7);
+  padding: 1.5rem 2rem;
+}
+
+.company-header .icon-wrapper {
+  background-color: #e0f2fe;
+  padding: 0.75rem;
+  border-radius: 0.75rem;
+}
+
+.company-header .icon-wrapper .material-icons {
+  color: #0369a1;
+  font-size: 1.5rem;
+}
+
+/* Restricted access message */
+.restricted-container {
+  min-height: 70vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #f9fafb, #f3f4f6);
+  border-radius: 1rem;
+  padding: 2rem;
+  text-align: center;
+}
+
+.restricted-message {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  max-width: 28rem;
+  width: 100%;
+}
+
+.restricted-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 4rem;
+  width: 4rem;
+  border-radius: 9999px;
+  background-color: #fee2e2;
+  margin: 0 auto;
+}
+
+.restricted-icon .material-icons {
+  color: #dc2626;
+  font-size: 1.875rem;
+}
+
+/* Form container */
+.form-container {
+  padding: 2rem;
+}
+
+@media (min-width: 640px) {
+  .form-container {
+    padding: 2.5rem;
+  }
+  
+  .company-header {
+    padding: 1.5rem 2.5rem;
+  }
+}

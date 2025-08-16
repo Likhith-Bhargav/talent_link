@@ -676,6 +676,38 @@ const updateAuthUI = () => {
       console.log('Post job button visibility:', isEmployer ? 'visible' : 'hidden');
     }
     
+    // Toggle Onboard Company button based on superuser status
+    const onboardCompanyBtn = document.getElementById('onboardCompanyBtn');
+    console.log('Onboard Company button element:', onboardCompanyBtn);
+    console.log('Current user object:', user);
+    if (onboardCompanyBtn) {
+      const isSuperuser = user && (user.is_superuser === true || user.is_superuser === 'true');
+      console.log('Is superuser?', isSuperuser);
+      onboardCompanyBtn.style.display = isSuperuser ? 'inline-flex' : 'none';
+      console.log('Onboard Company button visibility:', isSuperuser ? 'visible' : 'hidden');
+      
+      // Remove any existing click handlers to prevent duplicates
+      const newOnboardBtn = onboardCompanyBtn.cloneNode(true);
+      onboardCompanyBtn.parentNode.replaceChild(newOnboardBtn, onboardCompanyBtn);
+      
+      // Add click handler for the Onboard Company button
+      newOnboardBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        console.log('Onboard Company button clicked');
+        
+        // Use the global auth instance
+        console.log('Current user:', auth.currentUser);
+        console.log('Auth token exists:', !!auth.token);
+        console.log('Is authenticated:', auth.isAuthenticated());
+        
+        // Store navigation intent
+        localStorage.setItem('pendingNavigation', 'onboard-company.html');
+        
+        // Navigate to the onboard company page
+        window.location.href = 'onboard-company.html';
+      });
+    }
+    
     // Update Applications link based on user type
     const applicationsLink = document.getElementById('applicationsLink');
     if (applicationsLink) {
