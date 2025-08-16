@@ -132,7 +132,8 @@ class Jobs {
       salaryMin: urlParams.get('salary_min') || '',
       salaryMax: urlParams.get('salary_max') || '',
       remote: urlParams.get('remote') === 'true',
-      sortBy: urlParams.get('sort') || 'newest'
+      sortBy: urlParams.get('sort') || 'newest',
+      company: urlParams.get('company_id') || ''
     };
     
     // Update form fields
@@ -264,6 +265,9 @@ class Jobs {
     try {
       this.showLoading();
       
+      // Debug: Log the current filters
+      console.log('Current filters:', this.filters);
+      
       // Clear job-related caches to ensure fresh data
       if (window.TalentLink && window.TalentLink.api && window.TalentLink.api.clearJobCaches) {
         window.TalentLink.api.clearJobCaches();
@@ -275,11 +279,22 @@ class Jobs {
       const params = {
         page: this.currentPage,
         page_size: this.itemsPerPage,
-        job_type: this.filters.jobType,
-        remote: this.filters.remote,
+        job_type: this.filters.jobType || undefined,
+        remote: this.filters.remote || undefined,
         sort: this.filters.sortBy !== 'newest' ? this.filters.sortBy : undefined,
-        // Add more mappings as needed
+        search: this.filters.search || undefined,
+        location: this.filters.location || undefined
       };
+      
+      // Add company_id to params if it exists in the URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const companyId = urlParams.get('company_id');
+      if (companyId) {
+        params.company_id = companyId;
+      }
+      
+      // Debug: Log the API parameters being sent
+      console.log('API request params:', JSON.stringify(params, null, 2));
       
       // Clean up params (remove empty values)
       Object.keys(params).forEach(key => {

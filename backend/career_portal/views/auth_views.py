@@ -5,11 +5,12 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.authtoken.models import Token
 from rest_framework.authentication import TokenAuthentication, SessionAuthentication
 from django.contrib.auth import get_user_model, authenticate, login as auth_login, logout as auth_logout
-from django.db import IntegrityError
+from django.db import IntegrityError, transaction
 from django.middleware.csrf import get_token
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.utils.decorators import method_decorator
 import json
+from ..models import RecruiterCompany, Company
 
 User = get_user_model()
 
@@ -24,6 +25,7 @@ class RegisterView(APIView):
         first_name = request.data.get('first_name', '')
         last_name = request.data.get('last_name', '')
         user_type = request.data.get('user_type', 'candidate')
+        company_id = request.data.get('company_id')
 
         errors = {}
         # Basic validation
@@ -33,28 +35,56 @@ class RegisterView(APIView):
             errors['email'] = 'Email is required.'
         if not password:
             errors['password1'] = 'Password is required.'
-        if not password2:
-            errors['password2'] = 'Password confirmation is required.'
-        if password and password2 and password != password2:
+        if password != password2:
             errors['password2'] = 'Passwords do not match.'
-        if password and len(password) < 8:
-            errors['password1'] = 'Password must be at least 8 characters long.'
+        if not user_type in dict(User.USER_TYPE_CHOICES):
+            errors['user_type'] = 'Invalid user type.'
+        
+        # If company_id is provided, validate it
+        company = None
+        if company_id:
+            try:
+                company = Company.objects.get(id=company_id)
+            except Company.DoesNotExist:
+                errors['company_id'] = 'Company does not exist.'
+
         if errors:
             return Response(errors, status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            user = User.objects.create_user(
-                email=email,
-                username=username,
-                password=password,
-                first_name=first_name,
-                last_name=last_name,
-                user_type=user_type
-            )
-            return Response(
-                {'success': 'User created successfully'},
-                status=status.HTTP_201_CREATED
-            )
+            with transaction.atomic():
+                # Create the user
+                user = User.objects.create_user(
+                    username=username,
+                    email=email,
+                    password=password,
+                    first_name=first_name,
+                    last_name=last_name,
+                    user_type=user_type
+                )
+                
+                response_data = {
+                    'success': 'User created successfully',
+                    'user_id': user.id,
+                    'email': user.email,
+                    'username': user.username,
+                    'user_type': user.user_type
+                }
+                
+                # If this is an employer and company_id was provided, create the mapping
+                if user_type == 'employer' and company:
+                    # Check if mapping already exists
+                    if not RecruiterCompany.objects.filter(user=user, company=company).exists():
+                        RecruiterCompany.objects.create(user=user, company=company)
+                        response_data['company_mapping_created'] = True
+                    else:
+                        response_data['company_mapping_exists'] = True
+                
+                return Response(
+                    response_data,
+                    status=status.HTTP_201_CREATED
+                )
+                
         except IntegrityError:
             return Response(
                 {'username': 'A user with that username or email already exists'},
@@ -124,6 +154,24 @@ class LoginView(APIView):
                     'user_type': getattr(user, 'user_type', 'candidate'),
                     'is_superuser': user.is_superuser,
                 }
+                
+                # Add company information if user is an employer/recruiter
+                if user.user_type in ['employer', 'recruiter']:
+                    try:
+                        recruiter_company = RecruiterCompany.objects.select_related('company').filter(user=user).first()
+                        if recruiter_company:
+                            # Set both company_id and company for backward compatibility
+                            user_data['company_id'] = recruiter_company.company.id
+                            user_data['company'] = recruiter_company.company.id  # Set company as direct ID
+                            user_data['company_details'] = {
+                                'id': recruiter_company.company.id,
+                                'name': recruiter_company.company.name,
+                                'description': recruiter_company.company.description,
+                                # Add other company fields as needed
+                            }
+                            logger.info(f"Company data set for user {user.id}: {user_data['company_details']}")
+                    except Exception as e:
+                        logger.error(f"Error fetching company info for user {user.id}: {str(e)}", exc_info=True)
                 
                 # Create response
                 response = Response({

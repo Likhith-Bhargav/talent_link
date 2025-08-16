@@ -1,9 +1,11 @@
 from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser, JSONParser
-from django.shortcuts import get_object_or_404
+from django.db.models import Count, Q, F
+from django.db.models.functions import Coalesce
+from django.utils import timezone
+
 from ..models import Company, JobPosting, User
 from ..serializers import CompanySerializer, JobPostingSerializer
 
@@ -11,10 +13,34 @@ class CompanyViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows companies to be viewed or edited.
     """
-    queryset = Company.objects.all()
     serializer_class = CompanySerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.AllowAny]  # Allow anyone to view companies
     parser_classes = [MultiPartParser, JSONParser]
+    
+    def get_queryset(self):
+        """
+        Annotate the queryset with the count of active job postings.
+        Filter by company ID if provided in the request.
+        """
+        queryset = Company.objects.all()
+        
+        # Filter by company ID if provided
+        company_id = self.request.query_params.get('id')
+        if company_id:
+            queryset = queryset.filter(id=company_id)
+        
+        # Annotate with active job count
+        queryset = queryset.annotate(
+            job_count=Count(
+                'job_postings',
+                filter=Q(
+                    job_postings__is_active=True,
+                    job_postings__application_deadline__gte=timezone.now().date()
+                ),
+                distinct=True
+            )
+        )
+        return queryset
 
     def get_permissions(self):
         """

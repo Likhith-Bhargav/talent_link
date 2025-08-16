@@ -4,9 +4,10 @@ from .views import CompanyViewSet, JobPostingViewSet, JobApplicationViewSet
 from .views.auth_views import RegisterView, LoginView, LogoutView
 from .views.csrf_views import get_csrf_token
 from .views.user_views import CurrentUserView, UserView
+from .views.recruiter_views import RecruiterCompanyView, RecruiterCompanyDetailView
 
 router = DefaultRouter()
-router.register(r'companies', CompanyViewSet)
+router.register(r'companies', CompanyViewSet, basename='company')
 router.register(r'job-postings', JobPostingViewSet, basename='jobposting')
 router.register(r'job-applications', JobApplicationViewSet, basename='jobapplication')
 
@@ -31,6 +32,10 @@ urlpatterns = [
     
     # Authentication
     path('auth/', include(auth_patterns)),
+    
+    # Recruiter-company mappings
+    path('recruiter-companies/', RecruiterCompanyView.as_view(), name='recruiter-companies'),
+    path('recruiter-companies/<int:mapping_id>/', RecruiterCompanyDetailView.as_view(), name='recruiter-company-detail'),
     
     # Include DRF's auth URLs for browsable API login/logout
     path('api-auth/', include('rest_framework.urls')),

@@ -42,6 +42,7 @@ class User(AbstractUser):
         ('candidate', 'Candidate'),
         ('company', 'Company'),
         ('admin', 'Admin'),
+        ('employer', 'Employer'),
     ]
     
     email = models.EmailField(_('email address'), unique=True)

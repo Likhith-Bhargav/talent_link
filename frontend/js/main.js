@@ -23,8 +23,10 @@ class TalentLinkApp {
     this.setupEventListeners();
     this.checkAuth();
     
-    // Only load jobs if we're on the homepage
-    if (window.location.pathname.endsWith('index.html') || window.location.pathname === '/') {
+    // Only load jobs if we're on the jobs page, not on index
+    if (window.location.pathname.endsWith('jobs.html') && 
+        !window.location.pathname.endsWith('index.html') && 
+        window.location.pathname !== '/') {
       this.loadJobs();
     }
     
@@ -38,7 +40,10 @@ class TalentLinkApp {
     
     // Add page visibility change listener to refresh jobs when user returns to page
     document.addEventListener('visibilitychange', () => {
-      if (!document.hidden && (window.location.pathname.endsWith('index.html') || window.location.pathname === '/')) {
+      if (!document.hidden && 
+          window.location.pathname.endsWith('jobs.html') && 
+          !window.location.pathname.endsWith('index.html') && 
+          window.location.pathname !== '/') {
         // User has returned to the page, refresh jobs to show updated listings
         console.log('[TalentLink] Page became visible, refreshing jobs...');
         this.loadJobs();
@@ -147,8 +152,8 @@ class TalentLinkApp {
     this.jobTypeFilter = document.getElementById('jobTypeFilter');
     this.experienceFilter = document.getElementById('experienceFilter');
     
-    // Job Listings (use class selector for index.html)
-    this.jobList = document.querySelector('.job-list');
+    // Job Listings - Using the companies list container
+    this.jobList = document.querySelector('.companies-list');
     this.pagination = document.querySelector('.pagination');
     
     // Back to top button
@@ -288,54 +293,58 @@ class TalentLinkApp {
   }
   
   updateAuthUI(isLoggedIn) {
-    const loginLink = this.loginLink;
-    const registerLink = this.registerLink;
-    const logoutLink = document.getElementById('logoutLink');
-    const dashboardLink = document.getElementById('dashboardLink');
+    const authButtons = document.getElementById('authButtons');
     const userMenu = document.getElementById('userMenu');
-    const userNameDisplay = document.getElementById('userNameDisplay');
+    const userName = document.getElementById('userName');
+    const userEmail = document.getElementById('userEmail');
+    const userInitials = document.getElementById('userInitials');
+    const logoutBtn = document.getElementById('logoutBtn');
     
     if (isLoggedIn && this.user) {
       const user = this.user;
       
-      // Update navigation
-      if (loginLink) loginLink.style.display = 'none';
-      if (registerLink) registerLink.style.display = 'none';
-      if (logoutLink) {
-        logoutLink.style.display = 'block';
-        // Add event listener for logout
-        logoutLink.onclick = (e) => this.handleLogout(e);
-      }
-      if (dashboardLink) dashboardLink.style.display = 'block';
+      // Show user menu and hide auth buttons
+      if (userMenu) userMenu.style.display = 'block';
+      if (authButtons) authButtons.style.display = 'none';
       
-      // Update user menu if it exists
-      if (userMenu) {
-        userMenu.style.display = 'block';
+      // Update user info in dropdown
+      if (userName) {
+        const displayName = user.first_name || user.username || 'User';
+        userName.textContent = displayName;
       }
       
-      // Update user name display if it exists
-      if (userNameDisplay && user) {
-        const displayName = user.firstName || user.username || 'User';
-        userNameDisplay.textContent = `Hi, ${displayName}`;
+      if (userEmail) {
+        userEmail.textContent = user.email || '';
       }
       
-      // Update user avatar if available
-      const avatarInitial = user.firstName ? 
-        user.firstName.charAt(0).toUpperCase() : 
-        (user.username ? user.username.charAt(0).toUpperCase() : 'U');
-        
-      if (this.userAvatar) {
-        this.userAvatar.innerHTML = `<span class="avatar-text">${avatarInitial}</span>`;
+      // Update user avatar initials
+      if (userInitials) {
+        const initials = (user.first_name ? user.first_name.charAt(0) : '') + 
+                        (user.last_name ? user.last_name.charAt(0) : user.username ? user.username.charAt(0) : 'U');
+        userInitials.textContent = initials.toUpperCase();
+      }
+      
+      // Setup logout button
+      if (logoutBtn) {
+        logoutBtn.onclick = (e) => this.handleLogout(e);
+      }
+      
+      // Update post job button visibility based on user type
+      const postJobBtn = document.getElementById('postJobBtn');
+      if (postJobBtn) {
+        postJobBtn.style.display = user.user_type === 'employer' ? 'inline-flex' : 'none';
       }
       
     } else {
       // User is not authenticated
-      if (loginLink) loginLink.style.display = 'block';
-      if (registerLink) registerLink.style.display = 'block';
-      if (logoutLink) logoutLink.style.display = 'none';
-      if (dashboardLink) dashboardLink.style.display = 'none';
-      if (this.authButtons) this.authButtons.style.display = 'flex';
-      if (this.userMenu) this.userMenu.style.display = 'none';
+      if (authButtons) authButtons.style.display = 'flex';
+      if (userMenu) userMenu.style.display = 'none';
+      
+      // Hide post job button for non-logged in users
+      const postJobBtn = document.getElementById('postJobBtn');
+      if (postJobBtn) {
+        postJobBtn.style.display = 'none';
+      }
     }
   }
   
@@ -408,13 +417,15 @@ class TalentLinkApp {
         this.api.clearJobCaches();
       }
       
-      // Show loading state
-      this.jobList.innerHTML = `
-        <div class="loading">
-          <div class="spinner"></div>
-          <p>Loading jobs...</p>
-        </div>
-      `;
+      // Show loading state if jobList exists
+      if (this.jobList) {
+        this.jobList.innerHTML = `
+          <div class="loading">
+            <div class="spinner"></div>
+            <p>Loading jobs...</p>
+          </div>
+        `;
+      }
       // Fetch jobs from backend API
       const filters = {
         search: this.filters.search,
@@ -465,13 +476,15 @@ class TalentLinkApp {
       this.renderJobs();
     } catch (error) {
       console.error('Error loading jobs:', error);
-      this.jobList.innerHTML = `
-        <div class="error-message">
-          <span class="material-icons">error_outline</span>
-          <p>Failed to load jobs. Please try again later.</p>
-          <button class="btn btn-outline" onclick="app.loadJobs()">Retry</button>
-        </div>
-      `;
+      if (this.jobList) {
+        this.jobList.innerHTML = `
+          <div class="error-message">
+            <span class="material-icons">error_outline</span>
+            <p>Failed to load jobs. Please try again later.</p>
+            <button class="btn btn-outline" onclick="app.loadJobs()">Retry</button>
+          </div>
+        `;
+      }
     }
   }
   
