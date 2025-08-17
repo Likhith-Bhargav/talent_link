@@ -252,16 +252,18 @@
                   ${job.company_name ? job.company_name.charAt(0).toUpperCase() : '?'}
                 </div>
                 <div class="job-header-content">
-                  ${alreadyApplied ? `
-                    <button class="apply-now-btn applied" id="applyNowTop" data-job-id="${job.id}" disabled>
-                      <i class="material-icons">check_circle</i>
-                      <span>Applied</span>
-                    </button>
-                  ` : `
-                    <button class="apply-now-btn" id="applyNowTop" data-job-id="${job.id}">
-                      <i class="material-icons">send</i>
-                      <span>Apply Now</span>
-                    </button>
+                  ${user && (user.user_type === 'employer' || user.user_type === 'company') ? '' : `
+                    ${alreadyApplied ? `
+                      <button class="apply-now-btn applied" id="applyNowTop" data-job-id="${job.id}" disabled>
+                        <i class="material-icons">check_circle</i>
+                        <span>Applied</span>
+                      </button>
+                    ` : `
+                      <button class="apply-now-btn" id="applyNowTop" data-job-id="${job.id}">
+                        <i class="material-icons">send</i>
+                        <span>Apply Now</span>
+                      </button>
+                    `}
                   `}
                   <h1 class="job-title">${job.title}</h1>
                   <div class="company-name">
