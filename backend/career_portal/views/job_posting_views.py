@@ -39,13 +39,38 @@ class JobPostingViewSet(viewsets.ModelViewSet):
         if not hasattr(request.user, 'user_type') or request.user.user_type not in ['employer', 'company']:
             raise PermissionDenied("Only company/employer users can access this endpoint.")
             
-        # Get all companies associated with the user
-        companies = list(request.user.companies.all())
-        if not companies:
+        # Get the company IDs the user is associated with
+        company_ids = []
+        
+        # Get direct company associations
+        direct_companies = list(request.user.companies.all())
+        company_ids.extend([c.id for c in direct_companies])
+        
+        # Get companies through recruiter relationship
+        recruiter_companies = list(RecruiterCompany.objects.filter(
+            user=request.user
+        ).values_list('company_id', flat=True))
+        company_ids.extend(recruiter_companies)
+        
+        # Remove duplicates and ensure we have valid IDs
+        company_ids = list(set([cid for cid in company_ids if cid is not None]))
+        
+        if not company_ids:
             return Response([], status=status.HTTP_200_OK)
             
-        # Get job postings for all companies the user is associated with
-        queryset = JobPosting.objects.filter(company__in=companies)
+        print(f"DEBUG - Fetching jobs for company IDs: {company_ids}")
+        
+        # Get job postings for the user's companies with related data
+        queryset = JobPosting.objects.filter(
+            company_id__in=company_ids,
+            posted_by=request.user  # Only include jobs posted by the current user
+        ).select_related('company', 'posted_by')
+        
+        # Add applicant count to each job
+        from django.db.models import Count
+        queryset = queryset.annotate(
+            applicant_count=Count('applications', distinct=True)
+        )
         
         # Apply additional filters if provided
         status_filter = request.query_params.get('status')
@@ -67,46 +92,66 @@ class JobPostingViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         """
         Restrict the returned postings based on user type:
-        - Company users see only their company's postings
+        - Company/employer users see only their company's postings
+        - Admin users can see all postings, optionally filtered by company_id
         - Regular users see all active postings
         - Unauthenticated users see all active postings (handled by permissions)
         """
         print("\n=== DEBUG: get_queryset ===")
+        print(f"Request user: {getattr(self.request.user, 'email', 'Anonymous')}")
+        print(f"User type: {getattr(self.request.user, 'user_type', 'N/A')}")
         print(f"Request query params: {self.request.query_params}")
         
         queryset = JobPosting.objects.all()
         
-        # Filter by company if company_id is provided
-        company_id = self.request.query_params.get('company_id')
-        print(f"Company ID from URL: {company_id}")
-        
-        if company_id is not None:
-            print(f"Filtering jobs by company_id: {company_id}")
+        # Apply company filter if company is provided in query params (works for all user types)
+        company_id = self.request.query_params.get('company')
+        if company_id:
             queryset = queryset.filter(company_id=company_id)
-            print(f"SQL Query: {str(queryset.query)}")
-        else:
-            print("No company_id filter applied")
-        
-        # For company/employer users, only show their company's postings
-        if hasattr(self.request.user, 'user_type') and self.request.user.user_type in ['employer', 'company']:
-            # Get all companies associated with the user
-            companies = list(self.request.user.companies.all())
-            if companies:
-                queryset = queryset.filter(company__in=companies)
+            print(f"Filtering jobs by company ID: {company_id}")
+        # For company/employer users, only show their company's postings if no specific company filter is set
+        elif hasattr(self.request.user, 'user_type') and self.request.user.user_type in ['employer', 'company']:
+            # Get direct company associations
+            direct_companies = list(self.request.user.companies.all())
+            
+            # Get companies through recruiter relationship
+            recruiter_companies = list(RecruiterCompany.objects.filter(
+                user=self.request.user
+            ).values_list('company', flat=True))
+            
+            # Combine and deduplicate company IDs
+            company_ids = list(set(
+                [c.id for c in direct_companies] + 
+                list(recruiter_companies)
+            ))
+            
+            if company_ids:
+                queryset = queryset.filter(company_id__in=company_ids)
+                print(f"DEBUG - Filtering jobs by user's company IDs: {company_ids}")
             else:
                 # If user has no company, return empty queryset
+                print("DEBUG - No companies found for user")
                 return queryset.none()
+                
+        # For admin users, allow filtering by company_id if provided (legacy support)
+        elif self.request.user.is_staff:
+            company_id = self.request.query_params.get('company_id')
+            if company_id is not None:
+                print(f"Admin filtering by company_id: {company_id}")
+                queryset = queryset.filter(company_id=company_id)
+        
         # For regular users, only show active and non-expired postings
-        elif not self.request.user.is_staff:
+        else:
             queryset = queryset.filter(
                 is_active=True,
                 application_deadline__gte=timezone.now().date()
             )
-            # Apply job_type filter if present
+            
+            # Apply additional filters if provided
             job_type = self.request.query_params.get('job_type')
             if job_type:
                 queryset = queryset.filter(job_type=job_type)
-            # Apply search filter if present
+                
             search = self.request.query_params.get('search')
             if search:
                 queryset = queryset.filter(
@@ -115,15 +160,18 @@ class JobPostingViewSet(viewsets.ModelViewSet):
                     models.Q(requirements__icontains=search) |
                     models.Q(location__icontains=search)
                 )
-            # Apply location filter if present
+                
             location = self.request.query_params.get('location')
             if location:
                 queryset = queryset.filter(location__icontains=location)
-            # Apply experience filter if present
+                
             experience = self.request.query_params.get('experience')
             if experience:
                 queryset = queryset.filter(experience__icontains=experience)
-            
+        
+        # Order by most recent first
+        queryset = queryset.order_by('-created_at')
+        print(f"Final queryset SQL: {str(queryset.query)}")
         return queryset
 
     def get_permissions(self):

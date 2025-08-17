@@ -8,7 +8,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('career_portal', '0006_drop_recruiter_company'),
+        ('career_portal', '0005_alter_company_company_size_alter_company_industry'),
     ]
 
     operations = [

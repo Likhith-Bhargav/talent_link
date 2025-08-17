@@ -61,193 +61,6 @@
             </div>
         </div>
     </div>
-
-            font-size: 0.8rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            white-space: nowrap;
-            display: flex;
-            align-items: center;
-            gap: 0.3rem;
-        }
-        
-        .status-applied { 
-            background-color: #e3f2fd; 
-            color: #1976d2; 
-        }
-        .status-under_review { 
-            background-color: #fff3e0; 
-            color: #f57c00; 
-        }
-        .status-interview { 
-            background-color: #e8f5e9; 
-            color: #388e3c; 
-        }
-        .status-accepted { 
-            background-color: #e8f5e8; 
-            color: #2e7d32; 
-        }
-        .status-rejected { 
-            background-color: #ffebee; 
-            color: #d32f2f; 
-        }
-        
-        .applicant-details {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-        
-        .detail-item {
-            display: flex;
-            align-items: flex-start;
-            gap: 0.5rem;
-            padding: 0.75rem;
-            background: #f8f9fa;
-            border-radius: 8px;
-        }
-        
-        .detail-item .material-icons {
-            color: #4a6cf7;
-            font-size: 1.1rem;
-            margin-top: 0.1rem;
-        }
-        
-        .detail-content {
-            flex: 1;
-        }
-        
-        .detail-label {
-            font-weight: 600;
-            color: #495057;
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 0.25rem;
-        }
-        
-        .detail-value {
-            color: #1a1a1a;
-            font-size: 0.9rem;
-            line-height: 1.4;
-        }
-        
-        .cover-letter-section {
-            margin-bottom: 1.5rem;
-        }
-        
-        .cover-letter {
-            background: #f8f9fa;
-            padding: 1rem;
-            border-radius: 8px;
-            border-left: 4px solid #4a6cf7;
-        }
-        
-        .cover-letter .detail-label {
-            margin-bottom: 0.5rem;
-        }
-        
-        .cover-letter .detail-value {
-            font-style: italic;
-            line-height: 1.6;
-        }
-        
-        .applicant-actions {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-top: 1rem;
-            border-top: 1px solid #e9ecef;
-        }
-        
-        .btn-download-resume {
-            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-            color: white;
-            border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 8px rgba(40, 167, 69, 0.25);
-        }
-        
-        .btn-download-resume:hover {
-            background: linear-gradient(135deg, #218838 0%, #1ea085 100%);
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.35);
-            color: white;
-        }
-        
-        .no-resume {
-            color: #6c757d;
-            font-style: italic;
-            font-size: 0.9rem;
-        }
-        
-        .applicant-meta {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            font-size: 0.8rem;
-            color: #6c757d;
-        }
-        
-        .meta-item {
-            display: flex;
-            align-items: center;
-            gap: 0.3rem;
-        }
-        
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .modal-content {
-                width: 95%;
-                margin: 2% auto;
-            }
-            
-            .modal-header {
-                padding: 1rem 1.5rem;
-            }
-            
-            .modal-body {
-                padding: 1.5rem;
-            }
-            
-            .applicants-grid {
-                grid-template-columns: 1fr;
-                gap: 1rem;
-            }
-            
-            .applicant-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 1rem;
-            }
-            
-            .applicant-details {
-                grid-template-columns: 1fr;
-                gap: 0.75rem;
-            }
-            
-            .applicant-actions {
-                flex-direction: column;
-                gap: 1rem;
-                align-items: stretch;
-            }
-            
-            .btn-download-resume {
-                justify-content: center;
-            }
-        }
-    </style>
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
@@ -391,14 +204,7 @@
                 </div>
             `).join('');
             
-            // Add event listeners for 'View Applicants' buttons
-            document.querySelectorAll('.btn-view-applicants').forEach(button => {
-                button.addEventListener('click', async function() {
-                    const jobId = this.getAttribute('data-job-id');
-                    const jobTitle = this.getAttribute('data-job-title');
-                    await showApplicantsModal(jobId, jobTitle);
-                });
-            });
+            // Event delegation is now handled in the DOMContentLoaded listener
         } catch (error) {
             console.error('Error loading jobs:', error);
             applicationsList.innerHTML = `<div class="empty-state"><i class="material-icons">error</i><h3>Error</h3><p>Could not load your jobs. Error: ${error.message}</p></div>`;
@@ -408,60 +214,434 @@
     // Modal functionality
     const modal = document.getElementById('applicantsModal');
     const modalTitle = document.getElementById('modalTitle');
-    const applicantsList = document.getElementById('applicantsList');
     const closeBtn = document.querySelector('.close');
-
-    // Close modal when clicking the X
-    closeBtn.onclick = function() {
-        modal.style.display = "none";
-    }
-
-    // Close modal when clicking outside of it
-    window.onclick = function(event) {
-        if (event.target == modal) {
-            modal.style.display = "none";
+    
+    // Set up event listeners
+    document.addEventListener('DOMContentLoaded', () => {
+        // Close modal when clicking the close button
+        if (closeBtn) {
+            closeBtn.addEventListener('click', () => {
+                modal.style.display = 'none';
+            });
         }
+        
+        // Close modal when clicking outside
+        window.addEventListener('click', (event) => {
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+        
+        // Event delegation for View Applicants buttons
+        document.addEventListener('click', async (event) => {
+            const button = event.target.closest('.btn-view-applicants');
+            if (!button) return;
+            
+            event.preventDefault();
+            const jobId = button.dataset.jobId;
+            const jobTitle = button.dataset.jobTitle;
+            
+            if (!jobId || !jobTitle) {
+                console.error('Missing job ID or title');
+                return;
+            }
+            
+            try {
+                await showApplicantsModal(jobId, jobTitle);
+            } catch (error) {
+                console.error('Error showing applicants modal:', error);
+                showToast('Failed to load applicants. Please try again.', 'error');
+            }
+        });
+    });
+    
+    // Function to generate applicant card HTML
+    function generateApplicantCard(application) {
+        const applicant = application.applicant || {};
+        const job = application.job || {};
+        const resume = application.resume || {};
+        
+        // Format application date
+        const appDate = new Date(application.applied_at);
+        const formattedDate = appDate.toLocaleDateString('en-US', { 
+            year: 'numeric', 
+            month: 'short', 
+            day: 'numeric' 
+        });
+        
+        // Get initials for avatar
+        const nameParts = applicant.full_name ? applicant.full_name.split(' ') : [];
+        const initials = nameParts.length > 0 
+            ? nameParts[0].charAt(0) + (nameParts[1] ? nameParts[1].charAt(0) : '')
+            : '??';
+        
+        // Status badge class
+        const statusClass = application.status ? `status-${application.status.toLowerCase().replace(' ', '_')}` : 'status-applied';
+        const statusText = application.status ? application.status.replace('_', ' ') : 'Applied';
+        
+        // Skills list (max 5 skills)
+        const skills = resume.skills ? 
+            resume.skills.split(',').slice(0, 5).map(skill => 
+                `<span class="skill-tag">${skill.trim()}</span>`
+            ).join('') : '';
+        
+        // Experience text
+        const experienceText = resume.experience_years ? 
+            `${resume.experience_years} ${resume.experience_years > 1 ? 'years' : 'year'} exp` : '';
+        
+        return `
+            <div class="applicant-card" data-application-id="${application.id}">
+                <!-- Applicant Header -->
+                <div class="applicant-header">
+                    <div class="avatar">
+                        <div class="avatar-initials">${initials}</div>
+                    </div>
+                    <div class="applicant-info">
+                        <div class="applicant-name-row">
+                            <h4 class="applicant-name">${applicant.full_name || 'Applicant'}</h4>
+                            <span class="applicant-status ${statusClass}">${statusText}</span>
+                        </div>
+                        <div class="applicant-meta">
+                            <span class="meta-item">
+                                <i class="bi bi-envelope"></i>
+                                ${applicant.email || 'No email'}
+                            </span>
+                            ${applicant.phone_number ? `
+                                <span class="meta-item">
+                                    <i class="bi bi-telephone"></i>
+                                    ${applicant.phone_number}
+                                </span>
+                            ` : ''}
+                            ${experienceText ? `
+                                <span class="meta-item">
+                                    <i class="bi bi-briefcase"></i>
+                                    ${experienceText}
+                                </span>
+                            ` : ''}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Skills Section -->
+                ${skills ? `
+                    <div class="card-section">
+                        <div class="section-title">
+                            <i class="bi bi-award"></i>
+                            <span>Skills</span>
+                        </div>
+                        <div class="skills-container">
+                            ${skills}
+                        </div>
+                    </div>
+                ` : ''}
+                
+                <!-- Cover Letter -->
+                ${application.cover_letter ? `
+                    <div class="card-section">
+                        <div class="section-title">
+                            <i class="bi bi-chat-square-text"></i>
+                            <span>Cover Letter</span>
+                        </div>
+                        <div class="cover-letter-content">
+                            ${application.cover_letter}
+                        </div>
+                    </div>
+                ` : ''}
+                
+                <!-- Resume -->
+                ${resume.resume_file ? `
+                    <div class="card-section">
+                        <div class="section-title">
+                            <i class="bi bi-file-earmark-pdf"></i>
+                            <span>Resume</span>
+                        </div>
+                        <a href="${resume.resume_file}" target="_blank" class="btn btn-outline">
+                            <i class="bi bi-eye"></i> View Resume
+                        </a>
+                    </div>
+                ` : ''}
+                
+                <!-- Quick Actions -->
+                <div class="card-section">
+                    <div class="section-title">
+                        <i class="bi bi-lightning"></i>
+                        <span>Quick Actions</span>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="btn btn-outline" data-action="email" data-applicant-id="${applicant.id}">
+                            <i class="bi bi-envelope"></i> Email
+                        </button>
+                        <button class="btn btn-outline" data-action="schedule" data-applicant-id="${applicant.id}">
+                            <i class="bi bi-calendar-plus"></i> Schedule
+                        </button>
+                        <button class="btn btn-outline" data-action="reject" data-application-id="${application.id}">
+                            <i class="bi bi-x-circle"></i> Reject
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Status Update -->
+                <div class="card-section">
+                    <div class="section-title">
+                        <i class="bi bi-arrow-repeat"></i>
+                        <span>Update Status</span>
+                    </div>
+                    <div class="status-options">
+                        <div class="status-option ${application.status === 'applied' ? 'active' : ''}" data-status="applied">
+                            <i class="bi bi-send"></i>
+                            <span>Applied</span>
+                        </div>
+                        <div class="status-option ${application.status === 'under_review' ? 'active' : ''}" data-status="under_review">
+                            <i class="bi bi-search"></i>
+                            <span>Review</span>
+                        </div>
+                        <div class="status-option ${application.status === 'interview' ? 'active' : ''}" data-status="interview">
+                            <i class="bi bi-camera-video"></i>
+                            <span>Interview</span>
+                        </div>
+                        <div class="status-option status-accept ${application.status === 'accepted' ? 'active' : ''}" data-status="accepted">
+                            <i class="bi bi-check-circle"></i>
+                            <span>Hire</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+    
+    // Function to set up event listeners for applicant cards
+    function setupApplicantCardInteractions(modal, applications) {
+        const container = modal.querySelector('#applicantsContainer');
+        
+        // Handle status updates
+        container.addEventListener('click', function(e) {
+            const statusOption = e.target.closest('.status-option');
+            if (statusOption) {
+                e.preventDefault();
+                const card = statusOption.closest('.applicant-card');
+                const applicationId = card.closest('[data-application-id]').getAttribute('data-application-id');
+                const newStatus = statusOption.getAttribute('data-status');
+                
+                // Update UI immediately for better UX
+                const statusBadge = card.querySelector('.applicant-status');
+                statusBadge.className = `applicant-status status-${newStatus}`;
+                statusBadge.textContent = newStatus.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
+                
+                // Update active state
+                card.querySelectorAll('.status-option').forEach(opt => opt.classList.remove('active'));
+                statusOption.classList.add('active');
+                
+                // Update the application status in the backend
+                updateApplicationStatus(applicationId, newStatus);
+            }
+            
+            // Handle quick actions
+            const actionBtn = e.target.closest('[data-action]');
+            if (actionBtn) {
+                e.preventDefault();
+                const action = actionBtn.getAttribute('data-action');
+                const applicationId = actionBtn.getAttribute('data-application-id') || 
+                                    actionBtn.closest('[data-application-id]')?.getAttribute('data-application-id');
+                const application = applications.find(app => app.id.toString() === applicationId);
+                
+                if (application) {
+                    handleQuickAction(action, application);
+                }
+            }
+        });
+    }
+    
+    // Function to update application status
+    async function updateApplicationStatus(applicationId, status) {
+        try {
+            const response = await fetch(`/api/job-applications/${applicationId}/`, {
+                method: 'PATCH',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ status })
+            });
+            
+            if (!response.ok) {
+                throw new Error('Failed to update application status');
+            }
+            
+            // Show success message
+            showToast('Status updated successfully', 'success');
+            
+        } catch (error) {
+            console.error('Error updating application status:', error);
+            showToast('Failed to update status. Please try again.', 'error');
+        }
+    }
+    
+    // Function to handle quick actions
+    function handleQuickAction(action, application) {
+        switch (action) {
+            case 'email':
+                window.location.href = `mailto:${application.applicant.email}?subject=Regarding Your Application for ${application.job.title}`;
+                break;
+                
+            case 'schedule':
+                // In a real app, this would open a scheduling modal
+                showToast('Open scheduling calendar for ' + application.applicant.full_name, 'info');
+                break;
+                
+            case 'reject':
+                if (confirm(`Are you sure you want to reject ${application.applicant.full_name}'s application?`)) {
+                    updateApplicationStatus(application.id, 'rejected');
+                }
+                break;
+                
+            default:
+                console.log('Unknown action:', action);
+        }
+    }
+    
+    // Function to set up filtering and sorting
+    function setupApplicantFilters(modal, applications) {
+        const container = modal.querySelector('#applicantsContainer');
+        const sortBtn = modal.querySelector('#sortByDateBtn');
+        const statusFilters = modal.querySelectorAll('.status-filter');
+        
+        let sortOrder = 'desc'; // Default: newest first
+        let currentStatusFilter = 'all';
+        
+        // Toggle sort order
+        if (sortBtn) {
+            sortBtn.addEventListener('click', function() {
+                sortOrder = sortOrder === 'desc' ? 'asc' : 'desc';
+                this.innerHTML = sortOrder === 'desc' 
+                    ? '<i class="bi bi-sort-down"></i> Newest First'
+                    : '<i class="bi bi-sort-up"></i> Oldest First';
+                renderFilteredApplications();
+            });
+        }
+        
+        // Handle status filter clicks
+        statusFilters.forEach(filter => {
+            filter.addEventListener('click', function(e) {
+                e.preventDefault();
+                const status = this.getAttribute('data-status');
+                currentStatusFilter = status;
+                
+                // Update active state
+                statusFilters.forEach(f => f.classList.remove('active'));
+                this.classList.add('active');
+                
+                renderFilteredApplications();
+            });
+        });
+        
+        // Render applications based on current filters/sort
+        function renderFilteredApplications() {
+            let filtered = [...applications];
+            
+            // Apply status filter
+            if (currentStatusFilter !== 'all') {
+                filtered = filtered.filter(app => 
+                    app.status.toLowerCase() === currentStatusFilter
+                );
+            }
+            
+            // Apply sort
+            filtered.sort((a, b) => {
+                const dateA = new Date(a.applied_at);
+                const dateB = new Date(b.applied_at);
+                return sortOrder === 'desc' ? dateB - dateA : dateA - dateB;
+            });
+            
+            // Clear and re-render
+            container.innerHTML = filtered.map(app => generateApplicantCard(app)).join('');
+            
+            // Update count
+            const countElement = modal.querySelector('.applications-count');
+            if (countElement) {
+                countElement.textContent = `${filtered.length} ${filtered.length === 1 ? 'applicant' : 'applicants'}`;
+                
+                if (currentStatusFilter !== 'all') {
+                    countElement.textContent += ` (${statusFilters.find(f => f.getAttribute('data-status') === currentStatusFilter)?.textContent})`;
+                }
+            }
+        }
+    }
+    
+    // Helper function to show toast notifications
+    function showToast(message, type = 'info') {
+        // In a real app, you'd use a toast library or custom toast component
+        // This is a simple implementation that could be enhanced
+        const toast = document.createElement('div');
+        toast.className = `toast-notification ${type}`;
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        
+        // Auto-remove after delay
+        setTimeout(() => {
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }, 100);
     }
 
     async function showApplicantsModal(jobId, jobTitle) {
         console.log('showApplicantsModal called with jobId:', jobId, 'jobTitle:', jobTitle);
-        modalTitle.textContent = `Applicants for ${jobTitle}`;
-        modal.style.display = "block";
         
-        // Check if user is authenticated using the same method as page load
-        const token = localStorage.getItem('token');
-        const user = JSON.parse(localStorage.getItem('user') || '{}');
-        
-        if (!token || !user.id) {
-            applicantsList.innerHTML = `
-                <div class="empty-state">
-                    <i class="material-icons">error_outline</i>
-                    <h3>Authentication Required</h3>
-                    <p>Your session has expired. Please log in again to view applicants.</p>
-                    <a href="login.html?redirect=${encodeURIComponent(window.location.pathname)}" class="btn btn-primary">
-                        <i class="material-icons">login</i> Go to Login
-                    </a>
-                </div>
-            `;
+        // Ensure modal elements exist
+        if (!modal || !modalTitle) {
+            console.error('Modal elements not found');
+            showToast('Error initializing modal. Please refresh the page.', 'error');
             return;
         }
-        
-        applicantsList.innerHTML = `
-            <div class="loading">
-                <div class="spinner"></div>
-                <p>Loading applicants...</p>
-            </div>
-        `;
-        
+    
         try {
+            // Update modal title
+            modalTitle.textContent = `Applicants for ${jobTitle}`;
+            
+            // Get applicants list container
+            const applicantsList = document.getElementById('applicantsList');
+            if (!applicantsList) {
+                console.error('Applicants list container not found');
+                showToast('Error: Could not load applicants list', 'error');
+                return;
+            }
+            applicantsList.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Loading applicants...</p>
+                </div>`;
+                
+            // Show the modal before making the API call
+            modal.style.display = 'block';
+        
+            // Check if user is authenticated
+            const token = localStorage.getItem('token');
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            
+            if (!token || !user.id) {
+                applicantsList.innerHTML = `
+                    <div class="empty-state">
+                        <i class="material-icons">error_outline</i>
+                        <h3>Authentication Required</h3>
+                        <p>Your session has expired. Please log in again to view applicants.</p>
+                        <a href="login.html?redirect=${encodeURIComponent(window.location.pathname)}" class="btn btn-primary">
+                            <i class="material-icons">login</i> Go to Login
+                        </a>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Initialize API service
             const api = window.TalentLink?.api || new ApiService();
             console.log('Calling getJobApplicants for jobId:', jobId);
             
             // Add a timestamp to prevent caching
             const timestamp = new Date().getTime();
             
-            // Log the token being used
-            const token = localStorage.getItem('token');
+            // Log the token being used (already retrieved above)
             console.log('Current token:', token ? 'Token exists' : 'No token found');
             
             // Make the API call with additional headers
@@ -471,22 +651,30 @@
                     'Content-Type': 'application/json',
                     'Accept': 'application/json'
                 },
-                credentials: 'include'  // Important for including cookies/session
+                credentials: 'include',  // Important for including cookies/session
+                redirect: 'manual'  // Handle redirects manually
             });
             
             console.log('API Response status:', response.status);
             
-            // Check if we got redirected to login
-            if (response.redirected && response.url.includes('login')) {
-                throw new Error('Redirected to login page. Your session may have expired.');
+            // Handle unauthorized/redirect responses
+            if (response.status === 401 || response.status === 302 || 
+                (response.redirected && response.url.includes('login'))) {
+                throw new Error('Your session has expired. Please log in again.');
+            }
+            
+            // Handle other error statuses
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.detail || `Server returned ${response.status} status`);
             }
             
             // Check if the response is JSON
             const contentType = response.headers.get('content-type');
             if (!contentType || !contentType.includes('application/json')) {
                 const text = await response.text();
-                console.error('Non-JSON response:', text.substring(0, 500)); // Log first 500 chars
-                throw new Error('Server returned non-JSON response');
+                console.error('Non-JSON response:', text.substring(0, 500));
+                throw new Error('Received unexpected response format from server');
             }
             
             const data = await response.json();
@@ -495,13 +683,16 @@
             const applications = Array.isArray(data) ? data : (data?.applications || []);
             console.log('Processed applications:', applications);
             
-            if (applications.length === 0) {
+            if (!applications.length) {
                 console.log('No applications found for jobId:', jobId);
                 applicantsList.innerHTML = `
                     <div class="empty-state">
                         <i class="material-icons">people_outline</i>
                         <h3>No Applicants Yet</h3>
                         <p>No one has applied to this job yet.</p>
+                        <button class="btn btn-primary" onclick="modal.style.display='none'">
+                            <i class="material-icons">close</i> Close
+                        </button>
                     </div>
                 `;
                 return;
@@ -516,95 +707,183 @@
                         
                         return `
                             <div class="applicant-card">
+                                <!-- Header Section -->
                                 <div class="applicant-header">
+                                    <div class="applicant-avatar">
+                                        <span class="avatar-initials">
+                                            ${(applicant.first_name?.charAt(0) || '') + (applicant.last_name?.charAt(0) || 'U')}
+                                        </span>
+                                    </div>
                                     <div class="applicant-info">
-                                        <div class="applicant-name">
-                                            <i class="material-icons">person</i>
-                                            ${applicant.first_name || ''} ${applicant.last_name || ''}
-                                        </div>
-                                        <div class="applicant-contact">
-                                            <div class="contact-item">
-                                                <i class="material-icons">email</i>
-                                                ${applicant.email || 'No email provided'}
+                                        <div class="applicant-name-row">
+                                            <h4 class="applicant-name">
+                                                ${applicant.first_name || ''} ${applicant.last_name || 'Applicant'}
+                                                <span class="applicant-status ${statusClass}">
+                                                    ${application.status.replace('_', ' ')}
+                                                </span>
+                                            </h4>
+                                            <div class="applicant-meta">
+                                                <span class="meta-item" title="Application ID">
+                                                    <i class="material-icons">assignment</i>
+                                                    ID: ${application.id}
+                                                </span>
+                                                <span class="meta-item" title="Time since application">
+                                                    <i class="material-icons">schedule</i>
+                                                    ${getTimeAgo(appliedDate)}
+                                                </span>
                                             </div>
+                                        </div>
+                                        
+                                        <div class="applicant-contact">
+                                            ${applicant.email ? `
+                                            <a href="mailto:${applicant.email}" class="contact-item" title="Email">
+                                                <i class="material-icons">email</i>
+                                                ${applicant.email}
+                                            </a>` : ''}
                                             ${applicant.phone_number ? `
-                                            <div class="contact-item">
+                                            <a href="tel:${applicant.phone_number}" class="contact-item" title="Phone">
                                                 <i class="material-icons">phone</i>
                                                 ${applicant.phone_number}
-                                            </div>` : ''}
-                                        </div>
-                                    </div>
-                                    <div class="applicant-status ${statusClass}">
-                                        <i class="material-icons">${getStatusIcon(application.status)}</i>
-                                        ${application.status.replace('_', ' ')}
-                                    </div>
-                                </div>
-                                
-                                <div class="applicant-details">
-                                    <div class="detail-item">
-                                        <i class="material-icons">event</i>
-                                        <div class="detail-content">
-                                            <div class="detail-label">Applied On</div>
-                                            <div class="detail-value">${appliedDate.toLocaleDateString('en-US', { 
-                                                year: 'numeric', 
-                                                month: 'short', 
-                                                day: 'numeric',
-                                                hour: '2-digit',
-                                                minute: '2-digit'
-                                            })}</div>
-                                        </div>
-                                    </div>
-                                    ${application.skills ? `
-                                    <div class="detail-item">
-                                        <i class="material-icons">psychology</i>
-                                        <div class="detail-content">
-                                            <div class="detail-label">Skills</div>
-                                            <div class="detail-value">${application.skills}</div>
-                                        </div>
-                                    </div>` : ''}
-                                    ${applicant.location ? `
-                                    <div class="detail-item">
-                                        <i class="material-icons">location_on</i>
-                                        <div class="detail-content">
-                                            <div class="detail-label">Location</div>
-                                            <div class="detail-value">${applicant.location}</div>
-                                        </div>
-                                    </div>` : ''}
-                                    <div class="detail-item">
-                                        <i class="material-icons">work</i>
-                                        <div class="detail-content">
-                                            <div class="detail-label">User Type</div>
-                                            <div class="detail-value">${applicant.user_type || 'Candidate'}</div>
+                                            </a>` : ''}
+                                            ${applicant.location ? `
+                                            <span class="contact-item">
+                                                <i class="material-icons">location_on</i>
+                                                ${applicant.location}
+                                            </span>` : ''}
                                         </div>
                                     </div>
                                 </div>
                                 
+                                <!-- Main Content -->
+                                <div class="applicant-content">
+                                    <!-- Left Column -->
+                                    <div class="applicant-details">
+                                        <!-- Application Info Card -->
+                                        <div class="info-card">
+                                            <h5 class="info-card-title">
+                                                <i class="material-icons">event</i>
+                                                Application Details
+                                            </h5>
+                                            <div class="info-card-content">
+                                                <div class="info-row">
+                                                    <span class="info-label">Applied On</span>
+                                                    <span class="info-value">
+                                                        ${appliedDate.toLocaleDateString('en-US', { 
+                                                            year: 'numeric', 
+                                                            month: 'short', 
+                                                            day: 'numeric'
+                                                        })}
+                                                        <small>${appliedDate.toLocaleTimeString('en-US', {
+                                                            hour: '2-digit',
+                                                            minute: '2-digit'
+                                                        })}</small>
+                                                    </span>
+                                                </div>
+                                                <div class="info-row">
+                                                    <span class="info-label">User Type</span>
+                                                    <span class="info-value">
+                                                        <i class="material-icons">person</i>
+                                                        ${applicant.user_type?.replace('_', ' ') || 'Candidate'}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Skills Card -->
+                                        ${application.skills ? `
+                                        <div class="info-card">
+                                            <h5 class="info-card-title">
+                                                <i class="material-icons">psychology</i>
+                                                Skills & Expertise
+                                            </h5>
+                                            <div class="info-card-content">
+                                                <div class="skills-container">
+                                                    ${application.skills.split(',').map(skill => 
+                                                        `<span class="skill-tag">${skill.trim()}</span>`
+                                                    ).join('')}
+                                                </div>
+                                            </div>
+                                        </div>` : ''}
+                                    </div>
+                                    
+                                    <!-- Right Column -->
+                                    <div class="applicant-actions">
+                                        <!-- Resume Section -->
+                                        <div class="action-card">
+                                            <h5 class="action-card-title">
+                                                <i class="material-icons">description</i>
+                                                Resume
+                                            </h5>
+                                            ${application.resume_url ? `
+                                            <a href="${application.resume_url}" target="_blank" class="btn btn-primary btn-block">
+                                                <i class="material-icons">visibility</i>
+                                                View Resume
+                                            </a>` : 
+                                            '<div class="no-resume">No resume uploaded</div>'}
+                                        </div>
+                                        
+                                        <!-- Quick Actions -->
+                                        <div class="action-card">
+                                            <h5 class="action-card-title">
+                                                <i class="material-icons">bolt</i>
+                                                Quick Actions
+                                            </h5>
+                                            <div class="action-buttons">
+                                                <button class="btn btn-outline btn-block" data-action="email" data-email="${applicant.email || ''}">
+                                                    <i class="material-icons">email</i>
+                                                    Send Email
+                                                </button>
+                                                ${applicant.phone_number ? `
+                                                <a href="tel:${applicant.phone_number}" class="btn btn-outline btn-block">
+                                                    <i class="material-icons">call</i>
+                                                    Call Candidate
+                                                </a>` : ''}
+                                                <button class="btn btn-outline btn-block text-danger" data-action="reject">
+                                                    <i class="material-icons">close</i>
+                                                    Reject Application
+                                                </button>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Status Update -->
+                                        <div class="action-card">
+                                            <h5 class="action-card-title">
+                                                <i class="material-icons">update</i>
+                                                Update Status
+                                            </h5>
+                                            <div class="status-options">
+                                                <button class="status-option ${application.status === 'applied' ? 'active' : ''}" data-status="applied">
+                                                    <i class="material-icons">schedule</i>
+                                                    <span>Applied</span>
+                                                </button>
+                                                <button class="status-option ${application.status === 'under_review' ? 'active' : ''}" data-status="under_review">
+                                                    <i class="material-icons">visibility</i>
+                                                    <span>Review</span>
+                                                </button>
+                                                <button class="status-option ${application.status === 'interview' ? 'active' : ''}" data-status="interview">
+                                                    <i class="material-icons">event_available</i>
+                                                    <span>Interview</span>
+                                                </button>
+                                                <button class="status-option ${application.status === 'accepted' ? 'active' : ''} status-accept" data-status="accepted">
+                                                    <i class="material-icons">check_circle</i>
+                                                    <span>Hire</span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Cover Letter Section -->
                                 ${application.cover_letter ? `
                                 <div class="cover-letter-section">
-                                    <div class="cover-letter">
-                                        <div class="detail-label">Cover Letter</div>
-                                        <div class="detail-value">${application.cover_letter}</div>
+                                    <div class="section-header">
+                                        <i class="material-icons">description</i>
+                                        <h5>Cover Letter</h5>
+                                    </div>
+                                    <div class="cover-letter-content">
+                                        ${application.cover_letter}
                                     </div>
                                 </div>` : ''}
-                                
-                                <div class="applicant-actions">
-                                    <div class="applicant-meta">
-                                        <div class="meta-item">
-                                            <i class="material-icons">schedule</i>
-                                            Applied ${getTimeAgo(appliedDate)}
-                                        </div>
-                                        <div class="meta-item">
-                                            <i class="material-icons">assignment</i>
-                                            ID: ${application.id}
-                                        </div>
-                                    </div>
-                                    ${application.resume_url ? `
-                                    <a href="${application.resume_url}" target="_blank" class="btn-download-resume">
-                                        <i class="material-icons">download</i>
-                                        View Resume
-                                    </a>` : 
-                                    '<span class="no-resume">No resume uploaded</span>'}
-                                </div>
                             </div>
                         `;
                     }).join('')}

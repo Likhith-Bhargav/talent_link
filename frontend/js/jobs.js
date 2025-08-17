@@ -286,15 +286,14 @@ class Jobs {
         location: this.filters.location || undefined
       };
       
-      // Add company_id to params if it exists in the URL
+      // Add company to params if company_id exists in the URL
       const urlParams = new URLSearchParams(window.location.search);
       const companyId = urlParams.get('company_id');
       if (companyId) {
-        params.company_id = companyId;
+        // Use 'company' as the parameter name to match the backend expectation
+        params.company = companyId;
+        console.log('Filtering jobs by company ID:', companyId);
       }
-      
-      // Debug: Log the API parameters being sent
-      console.log('API request params:', JSON.stringify(params, null, 2));
       
       // Clean up params (remove empty values)
       Object.keys(params).forEach(key => {
@@ -302,6 +301,9 @@ class Jobs {
           delete params[key];
         }
       });
+      
+      // Debug: Log the API parameters being sent after cleanup
+      console.log('API request params (after cleanup):', JSON.stringify(params, null, 2));
       
       // Fetch jobs from API
       if (!api) {
@@ -430,48 +432,81 @@ class Jobs {
       <div class="job-card ${job.featured ? 'featured' : ''}" data-id="${job.id}">
         <div class="job-card-content">
           <div class="job-header">
-            <div class="company-logo" style="background-color: ${this.getRandomColor()}">
+            <div class="company-logo" style="background: ${this.getRandomColor()}">
               ${companyInitial}
             </div>
             <div class="job-header-text">
-              <h3 class="job-title">${job.title}</h3>
-              <a href="#" class="job-company">${job.company_name || ''}</a>
-              <span class="job-type">${jobType}</span>
-              ${job.urgent ? '<span class="job-urgent">Urgent</span>' : ''}
+              <div class="job-title-wrapper">
+                <h3 class="job-title" title="${job.title}">${job.title}</h3>
+                ${job.urgent ? '<span class="job-urgent">Urgent</span>' : ''}
+              </div>
+              <div class="job-company-wrapper">
+                <a href="#" class="job-company" title="${job.company_name || 'Company'}">
+                  <i class="material-icons">business</i> ${job.company_name || 'Company'}
+                </a>
+                <span class="job-type" data-type="${jobType.toLowerCase()}">${jobType}</span>
+              </div>
             </div>
           </div>
           
           <div class="job-meta">
-            <span><i class="material-icons">location_on</i> ${job.location}</span>
-            <span><i class="material-icons">attach_money</i> ${salary}</span>
-            <span><i class="material-icons">work_outline</i> ${experienceMap[experience] || experience}</span>
+            <div class="meta-item location">
+              <i class="material-icons">location_on</i>
+              <span class="meta-text" title="${job.location || 'Location not specified'}">
+                ${job.location || 'Not specified'}
+              </span>
+            </div>
+            <div class="meta-item salary">
+              <i class="material-icons">attach_money</i>
+              <span class="meta-text" title="Salary: ${salary}">
+                ${salary ? salary.replace(/[^0-9-]/g, '').replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,') : 'Not specified'}
+              </span>
+            </div>
+            <div class="meta-item experience">
+              <i class="material-icons">work_outline</i>
+              <span class="meta-text">
+                ${experienceMap[experience] || experience || 'Experience not specified'}
+              </span>
+            </div>
           </div>
           
-          <p class="job-description">${job.description}</p>
+          ${job.description ? `
+            <div class="job-description-wrapper">
+              <p class="job-description" title="${job.description}">
+                ${job.description.length > 150 ? job.description.substring(0, 150) + '...' : job.description}
+              </p>
+            </div>
+          ` : ''}
           
-          <div class="job-skills">
-            ${skills.slice(0, 3).map(skill => 
-              `<span class="skill-tag">${skill}</span>`
-            ).join('')}
-            ${skills.length > 3 ? 
-              `<span class="skill-tag more">+${skills.length - 3} more</span>` : ''
-            }
-          </div>
+          ${skills.length > 0 ? `
+            <div class="job-skills">
+              ${skills.slice(0, 3).map(skill => 
+                `<span class="skill-tag" title="${skill}">${skill}</span>`
+              ).join('')}
+              ${skills.length > 3 ? 
+                `<span class="skill-tag more" title="${skills.slice(3).join(', ')}">+${skills.length - 3} more</span>` : ''
+              }
+            </div>
+          ` : ''}
           
           <div class="job-footer">
-            <span class="job-posted"><i class="material-icons">access_time</i> Posted ${formattedDate}</span>
+            <div class="job-posted">
+              <i class="material-icons">access_time</i>
+              <span>Posted ${formattedDate}</span>
+            </div>
             <div class="job-actions">
               ${currentUser && (currentUser.user_type === 'candidate' || currentUser.user_type === 'job_seeker' || currentUser.is_candidate) ? `
-                <button class="btn-apply" data-job-id="${job.id}">
+                <button class="btn-apply" data-job-id="${job.id}" title="Apply for this position">
                   <i class="material-icons">send</i> Apply Now
                 </button>
               ` : ''}
-              <button class="btn-save ${isSaved ? 'saved' : ''}" data-job-id="${job.id}">
+              <button class="btn-save ${isSaved ? 'saved' : ''}" data-job-id="${job.id}" title="${isSaved ? 'Remove from saved jobs' : 'Save this job'}">
                 <i class="material-icons">${isSaved ? 'bookmark' : 'bookmark_border'}</i>
-                ${isSaved ? 'Saved' : 'Save'}
+                <span class="btn-text">${isSaved ? 'Saved' : 'Save'}</span>
               </button>
-              <a href="job-details.html?id=${job.id}" class="btn-view-details">
-                <i class="material-icons">visibility</i> View Details
+              <a href="job-details.html?id=${job.id}" class="btn-view-details" title="View job details">
+                <i class="material-icons">visibility</i>
+                <span class="btn-text">Details</span>
               </a>
             </div>
           </div>
@@ -525,10 +560,14 @@ class Jobs {
     // Click on job card to view details
     document.querySelectorAll('.job-card').forEach(card => {
       card.addEventListener('click', (e) => {
-        // Don't navigate if clicking on action buttons or their children
-        if (!e.target.closest('.btn-save') && !e.target.closest('.btn-apply')) {
-          const jobId = card.dataset.jobId;
-          window.location.href = `job-details.html?id=${jobId}`;
+        // Only handle clicks on the card itself, not on interactive elements
+        if (!e.target.closest('a') && !e.target.closest('button') && !e.target.closest('.btn-save') && !e.target.closest('.btn-apply')) {
+          const jobId = card.dataset.id || card.dataset.jobId;
+          if (jobId) {
+            console.log('Job card clicked, job ID:', jobId);
+            // You can add custom behavior here instead of redirecting
+            // window.location.href = `job-details.html?id=${jobId}`;
+          }
         }
       });
     });
