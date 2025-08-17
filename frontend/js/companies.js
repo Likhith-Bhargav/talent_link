@@ -89,13 +89,13 @@ class Companies {
         return;
       }
       
-      // Get current user's info
-      const currentUser = auth.currentUser;
+      // Get current user's info - ensure we have the latest user data
+      let currentUser = auth.currentUser;
       const isRecruiter = currentUser?.user_type === 'recruiter' || 
                          currentUser?.user_type === 'employer';
       
       console.log('Current user type:', currentUser?.user_type);
-      console.log('Current user object:', JSON.parse(JSON.stringify(currentUser)));
+      console.log('Current user object:', JSON.parse(JSON.stringify(currentUser || {})));
       
       // Prepare API parameters
       const params = {
@@ -110,79 +110,105 @@ class Companies {
       // If user is a recruiter/employer, only show their company
       if (isRecruiter) {
         // First, try to get company ID from the user's profile
-        let companyId = currentUser.company_id;
+        let companyId = currentUser?.company_id;
         
-        // Check if company is directly in the user object as an ID
-        if (!companyId && currentUser.company) {
+        // If no company ID found, try to refresh user data
+        if (!companyId && auth.getCurrentUser) {
+          try {
+            console.log('Refreshing user data...');
+            const freshUserData = await auth.getCurrentUser();
+            if (freshUserData) {
+              currentUser = freshUserData;
+              auth.currentUser = freshUserData; // Update the auth module's user data
+              companyId = freshUserData.company_id;
+              console.log('Refreshed user data:', freshUserData);
+            }
+          } catch (error) {
+            console.error('Error refreshing user data:', error);
+          }
+        }
+        
+        // Check if company is directly in the user object as an ID or object
+        if (!companyId && currentUser?.company) {
           // Handle case where company is a direct ID (number or string)
           if (typeof currentUser.company === 'number' || 
               (typeof currentUser.company === 'string' && !isNaN(currentUser.company))) {
             companyId = parseInt(currentUser.company, 10);
           } 
           // Handle case where company is an object with an id property
-          else if (currentUser.company && typeof currentUser.company === 'object' && 'id' in currentUser.company) {
-            companyId = currentUser.company.id;
+          else if (typeof currentUser.company === 'object' && currentUser.company !== null) {
+            companyId = currentUser.company.id || currentUser.company.pk;
           }
         }
         
         // Check company_details if available (new structure)
-        if (!companyId && currentUser.company_details && currentUser.company_details.id) {
+        if (!companyId && currentUser?.company_details?.id) {
           companyId = currentUser.company_details.id;
         }
         
         // If still not found, try to get from companies array
-        if (!companyId && currentUser.companies && currentUser.companies.length > 0) {
-          companyId = currentUser.companies[0].id;
+        if (!companyId && currentUser?.companies?.length > 0) {
+          companyId = currentUser.companies[0].id || currentUser.companies[0].pk;
         }
         
         console.log('Company ID resolution:', {
-            user_id: currentUser.id,
-            user_type: currentUser.user_type,
-            company_id: currentUser.company_id,
-            company: currentUser.company,
-            company_type: typeof currentUser.company,
-            companies: currentUser.companies,
+            user_id: currentUser?.id,
+            user_type: currentUser?.user_type,
+            company_id: currentUser?.company_id,
+            company: currentUser?.company,
+            company_type: typeof currentUser?.company,
+            companies: currentUser?.companies,
             resolved_company_id: companyId,
-            all_user_props: Object.keys(currentUser).reduce((acc, key) => {
+            all_user_props: currentUser ? Object.keys(currentUser).reduce((acc, key) => {
               acc[key] = typeof currentUser[key];
               return acc;
-            }, {})
+            }, {}) : {}
         });
         
-        // If not found, try to fetch the company mapping from the API
+        // If still not found, try to fetch the company mapping from the API
         if (!companyId) {
           try {
             console.log('Fetching company mapping for recruiter...');
-            console.log('Fetching company mapping from:', '/api/recruiter-companies/');
             const response = await api.get('/api/recruiter-companies/');
-            console.log('Recruiter companies response:', {
-              response: response,
-              type: typeof response,
-              isArray: Array.isArray(response),
-              hasResults: response && response.results !== undefined,
-              keys: response ? Object.keys(response) : []
-            });
+            console.log('Recruiter companies response:', response);
             
-            // Handle both array response and paginated response
-            let results = [];
+            // Handle different response structures
+            let companyMapping = null;
+            
+            // Case 1: Direct array response
             if (Array.isArray(response)) {
-              results = response;
-            } else if (response && Array.isArray(response.results)) {
-              results = response.results;
-            } else if (response && response.data) {
-              // Handle case where response is wrapped in a data property
-              results = Array.isArray(response.data) ? response.data : [response.data];
+              companyMapping = response[0];
+            } 
+            // Case 2: Paginated response with results array
+            else if (response?.results?.length > 0) {
+              companyMapping = response.results[0];
+            } 
+            // Case 3: Single object response
+            else if (response && typeof response === 'object') {
+              companyMapping = response;
             }
             
-            if (results.length > 0) {
-              const mapping = results[0];
-              companyId = mapping.company_id || (mapping.company && mapping.company.id);
+            if (companyMapping) {
+              // Try different possible locations for the company ID
+              companyId = companyMapping.company_id || 
+                         (companyMapping.company?.id || companyMapping.company?.pk) ||
+                         (companyMapping.company_details?.id || companyMapping.company_details?.pk);
+                         
               console.log('Found company ID from API:', companyId);
               
               // Update the user object with the company ID for future use
               if (currentUser) {
                 currentUser.company_id = companyId;
-                currentUser.company = mapping.company;
+                currentUser.company = companyMapping.company || companyMapping;
+                // Also update the auth module's currentUser reference
+                if (window.TalentLink?.auth?.currentUser) {
+                  window.TalentLink.auth.currentUser.company_id = companyId;
+                  window.TalentLink.auth.currentUser.company = companyMapping.company || companyMapping;
+                  // Persist the updated user data
+                  if (window.TalentLink.auth.saveUserData) {
+                    window.TalentLink.auth.saveUserData(window.TalentLink.auth.currentUser);
+                  }
+                }
               }
             }
           } catch (error) {
@@ -504,7 +530,7 @@ class Companies {
           console.log('Company mapping created:', response.company_mapping_created || false);
           
           // Show success message
-          showMessage('success', 'Recruiter created and assigned to company successfully!');
+          showMessage('Recruiter created and assigned to company successfully!', 'success');
           
           // Close the modal after a short delay
           setTimeout(() => {
@@ -544,7 +570,7 @@ class Companies {
             errorMessage += error.message;
           }
           
-          showMessage('error', errorMessage);
+          showMessage(errorMessage, 'error');
         } finally {
           // Re-enable the submit button
           submitBtn.disabled = false;
