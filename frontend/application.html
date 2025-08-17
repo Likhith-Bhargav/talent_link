@@ -10,6 +10,11 @@
     <link rel="stylesheet" href="css/application.css">
 </head>
 <body>
+    <!-- Background Orbs -->
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+    
     <!-- Navigation -->
     <nav class="navbar">
         <div class="container">
@@ -256,11 +261,13 @@
         function showAutoFillStatus(message, type = 'processing') {
             if (autoFillStatus && statusText) {
                 statusText.textContent = message;
-                autoFillStatus.style.display = 'block';
+                autoFillStatus.classList.add('visible');
                 
                 const statusMessage = autoFillStatus.querySelector('.status-message');
                 if (statusMessage) {
-                    statusMessage.className = `status-message ${type}`;
+                    // Remove any existing status classes
+                    statusMessage.className = 'status-message';
+                    statusMessage.classList.add(type);
                     
                     const icon = statusMessage.querySelector('.material-icons');
                     if (icon) {
@@ -282,7 +289,7 @@
         // Function to hide auto-fill status
         function hideAutoFillStatus() {
             if (autoFillStatus) {
-                autoFillStatus.style.display = 'none';
+                autoFillStatus.classList.remove('visible');
             }
         }
         
